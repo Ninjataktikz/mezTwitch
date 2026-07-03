@@ -9,12 +9,20 @@
 <x-dc>
 <helmet>
   <style>
-    body { margin: 0; background: transparent; overflow: hidden; }
+    html, body { height: 100%; }
+    body { margin: 0; background: transparent; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     @keyframes mezalert { 0% { transform: translate(-50%, -24px); opacity: 0; } 8% { transform: translate(-50%, 0); opacity: 1; } 92% { transform: translate(-50%, 0); opacity: 1; } 100% { transform: translate(-50%, -24px); opacity: 0; } }
   </style>
+  <script>
+    (function () {
+      function fit() { document.documentElement.style.setProperty('--mezscale', Math.min(window.innerWidth / 1920, window.innerHeight / 1080)); }
+      window.addEventListener('resize', fit);
+      fit();
+    })();
+  </script>
 </helmet>
-<div data-screen-label="OBS Game Overlay" style="width: 1920px; height: 1080px; position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; overflow: hidden; background: {{ canvasBg }};">
+<div data-screen-label="OBS Game Overlay" style="width: 1920px; height: 1080px; flex-shrink: 0; transform: scale(var(--mezscale, 1)); position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; overflow: hidden; background: {{ canvasBg }};">
 
   <sc-if value="{{ demo }}" hint-placeholder-val="{{ true }}">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">cs2 game capture</div>
@@ -110,7 +118,9 @@ class Component extends DCLogic {
       elo: live.elo ?? this.props.elo ?? '2847',
       statColor: st.statColor ?? '#FAFAF8',
       deltaStr: st.delta != null ? ' ' + (st.delta >= 0 ? '+' + st.delta : String(st.delta)) : '',
-      stripLabel: live.todayW != null ? 'faceit · today w' + live.todayW + '—l' + (live.todayL ?? 0) : 'faceit elo',
+      stripLabel: live.rank != null
+        ? (live.region ?? 'na') + ' #' + live.rank + (live.todayW != null ? ' · w' + live.todayW + '—l' + (live.todayL ?? 0) : '')
+        : (live.todayW != null ? 'faceit · today w' + live.todayW + '—l' + (live.todayL ?? 0) : 'faceit elo'),
       tagline: this.props.tagline ?? 'rifler · 14',
       showAlert: this.props.showAlert ?? true,
       alertLabel: this.props.alertLabel ?? 'new follower',

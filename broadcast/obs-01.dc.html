@@ -9,21 +9,29 @@
 <x-dc>
 <helmet>
   <style>
-    body { margin: 0; background: #0E0E0E; overflow: hidden; }
+    html, body { height: 100%; }
+    body { margin: 0; background: #0E0E0E; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     @keyframes mezping { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(3.2); opacity: 0; } }
     @keyframes mezbreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
   </style>
+  <script>
+    (function () {
+      function fit() { document.documentElement.style.setProperty('--mezscale', Math.min(window.innerWidth / 1920, window.innerHeight / 1080)); }
+      window.addEventListener('resize', fit);
+      fit();
+    })();
+  </script>
 </helmet>
-<div data-screen-label="OBS Starting Soon" style="width: 1920px; height: 1080px; background: {{ bg }}; position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; color: {{ fg }}; overflow: hidden;">
+<div data-screen-label="OBS Starting Soon" style="width: 1920px; height: 1080px; flex-shrink: 0; transform: scale(var(--mezscale, 1)); background: {{ bg }}; position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; color: {{ fg }}; overflow: hidden;">
   <div style="position: absolute; top: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">mez//broadcast</div>
   <div style="position: absolute; top: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">{{ dateStr }}</div>
   <div style="position: absolute; bottom: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">faceit/mezcs_</div>
-  <div style="position: absolute; bottom: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">starting soon</div>
+  <div style="position: absolute; bottom: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">1920×1080/60</div>
   <div style="position: absolute; top: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: {{ hairline }};"></div>
   <div style="position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: {{ hairline }};"></div>
   <div style="position: absolute; left: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: {{ hairline }};"></div>
   <div style="position: absolute; right: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: {{ hairline }};"></div>
-  <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); text-align: center; white-space: nowrap;">
+  <div style="position: absolute; left: 50%; top: 42%; transform: translate(-50%,-50%); text-align: center; white-space: nowrap;">
     <div style="position: relative; width: 360px; margin: 0 auto;">
       <svg viewBox="0 0 390 80" width="360" role="img" aria-label="mez." style="display: block;">
         <g fill="{{ fg }}"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
@@ -32,7 +40,11 @@
       <div style="position: absolute; left: 339px; top: 53px; width: 21px; height: 21px; border: 1px solid {{ signal }}; animation: mezping 2.4s ease-out infinite;"></div>
     </div>
     <div style="font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; margin-top: 72px;"><span style="color: {{ statColor }};">elo {{ elo }}</span><span style="color: {{ fg }};"> · </span><span style="color: {{ kdColor }};">k/d {{ kd }}</span><span style="color: {{ fg }};"> · </span><span style="color: {{ hsColor }};">hs {{ hs }}%</span></div>
+    <sc-if value="{{ hasRank }}" hint-placeholder-val="{{ false }}">
+      <div style="font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; margin-top: 18px;"><span style="color: #17A30A;">{{ rankRegion }}</span><span style="color: {{ statColor }};">{{ rankNum }}</span><span style="color: {{ muted }};">{{ rankTotal }}</span></div>
+    </sc-if>
   </div>
+  <div style="position: absolute; left: 50%; bottom: 130px; transform: translateX(-50%); font-size: 34px; letter-spacing: 0.16em; text-transform: uppercase; color: {{ fg }}; white-space: nowrap;">{{ dotsText }}</div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{
@@ -49,10 +61,12 @@ class Component extends DCLogic {
 
   componentDidMount() {
     this._startFaceit();
+    this._dotsTimer = setInterval(() => this.setState((s) => ({ d: ((s.d ?? 0) + 1) % 4 })), 800);
   }
 
   componentWillUnmount() {
     clearInterval(this._faceitTimer);
+    clearInterval(this._dotsTimer);
   }
 
   _startFaceit() {
@@ -75,9 +89,14 @@ class Component extends DCLogic {
     const now = new Date();
     return {
       dateStr: now.getFullYear() + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + String(now.getDate()).padStart(2, '0'),
+      dotsText: 'starting soon' + '...'.slice(0, st.d ?? 0),
       elo: live.elo ?? this.props.elo ?? '2847',
       kd: live.kd ?? this.props.kd ?? '1.01',
       hs: live.hs ?? this.props.hs ?? '51',
+      hasRank: live.rank != null,
+      rankRegion: live.rank != null ? (live.region ?? 'na') : '',
+      rankNum: live.rank != null ? ' #' + live.rank : '',
+      rankTotal: live.rank != null && live.total ? ' / ' + live.total.toLocaleString() : '',
       statColor: st.statColor ?? (ink ? '#B9B9B4' : '#6E6E68'),
       kdColor: st.kdColor ?? (ink ? '#B9B9B4' : '#6E6E68'),
       hsColor: st.hsColor ?? (ink ? '#B9B9B4' : '#6E6E68'),

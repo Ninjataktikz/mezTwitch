@@ -14,8 +14,25 @@ export async function fetchFaceitLive(nickname, apiKey) {
   const out = {
     elo: game && game.faceit_elo != null ? String(game.faceit_elo) : undefined,
     level: game && game.skill_level != null ? game.skill_level : undefined,
+    region: game && game.region ? String(game.region).toLowerCase() : undefined,
+    rank: undefined,
     kd: undefined, hs: undefined, todayW: undefined, todayL: undefined, last: undefined,
   };
+  // region ranking position (the "top 1000" number on faceit.com)
+  try {
+    if (game && game.region) {
+      const rr = await fetch('https://open.faceit.com/data/v4/rankings/games/' + gameId + '/regions/' + game.region + '/players/' + pid + '?limit=1', { headers });
+      if (rr.ok) {
+        const rd = await rr.json();
+        let pos = rd.position;
+        if (pos == null && rd.items && rd.items.length) {
+          const me = rd.items.find((i) => i.player_id === pid);
+          if (me) pos = me.position;
+        }
+        if (pos != null) out.rank = pos;
+      }
+    }
+  } catch (e) {}
   // lifetime averages
   try {
     const sr = await fetch('https://open.faceit.com/data/v4/players/' + pid + '/stats/' + gameId, { headers });
@@ -62,12 +79,40 @@ export async function fetchFaceitLive(nickname, apiKey) {
       }
     }
   } catch (e) {}
+  // region total (no API field — found by search, cached 24h)
+  try {
+    if (game && game.region) out.total = await regionTotal(gameId, game.region, headers);
+  } catch (e) {}
   console.log('[faceit] live stats loaded:', JSON.stringify(out));
   return out;
 }
 
 // legacy name kept for compatibility
 export const fetchFaceitStats = fetchFaceitLive;
+
+async function regionTotal(gameId, region, headers) {
+  const key = 'mez_region_total';
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    const c = JSON.parse(localStorage.getItem(key));
+    if (c && c.d === today && c.r === region) return c.n;
+  } catch (e) {}
+  const probe = async (off) => {
+    const r = await fetch('https://open.faceit.com/data/v4/rankings/games/' + gameId + '/regions/' + region + '?offset=' + off + '&limit=1', { headers });
+    if (!r.ok) throw new Error('rank probe ' + r.status);
+    const d = await r.json();
+    return (d.items || []).length > 0;
+  };
+  let lo = 1, hi = 32000;
+  while (await probe(hi)) { lo = hi; hi *= 2; if (hi > 4000000) break; }
+  while (hi - lo > 1) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (await probe(mid)) lo = mid; else hi = mid;
+  }
+  const n = lo + 1;
+  try { localStorage.setItem(key, JSON.stringify({ d: today, r: region, n: n })); } catch (e) {}
+  return n;
+}
 
 // FACEIT's official skill-level colors (matches faceit.com)
 export function levelColor(level) {

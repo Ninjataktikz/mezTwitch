@@ -9,11 +9,19 @@
 <x-dc>
 <helmet>
   <style>
-    body { margin: 0; background: #0E0E0E; overflow: hidden; }
+    html, body { height: 100%; }
+    body { margin: 0; background: #0E0E0E; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
   </style>
+  <script>
+    (function () {
+      function fit() { document.documentElement.style.setProperty('--mezscale', Math.min(window.innerWidth / 1920, window.innerHeight / 1080)); }
+      window.addEventListener('resize', fit);
+      fit();
+    })();
+  </script>
 </helmet>
-<div data-screen-label="OBS Review" style="width: 1920px; height: 1080px; background: {{ bg }}; position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; color: {{ fg }}; overflow: hidden;">
+<div data-screen-label="OBS Review" style="width: 1920px; height: 1080px; flex-shrink: 0; transform: scale(var(--mezscale, 1)); background: {{ bg }}; position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; color: {{ fg }}; overflow: hidden;">
 
   <div style="position: absolute; top: 40px; left: 96px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">mez//review</div>
   <div style="position: absolute; top: 40px; right: 96px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">{{ dateStr }}</div>
@@ -62,6 +70,9 @@
       <rect x="368" y="58" width="22" height="22" fill="{{ accent }}"></rect>
     </svg>
     <div style="font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: {{ fg }}; text-align: right; font-variant-numeric: tabular-nums;"><span style="color: {{ statColor }};">elo {{ elo }}</span> · <span style="color: {{ kdColor }};">k/d {{ kd }}</span> · <span style="color: {{ hsColor }};">hs {{ hs }}%</span></div>
+    <sc-if value="{{ hasRank }}" hint-placeholder-val="{{ false }}">
+      <div style="font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase; text-align: right;"><span style="color: #17A30A;">{{ rankRegion }}</span><span style="color: {{ statColor }};">{{ rankNum }}</span><span style="color: {{ muted }};">{{ rankTotal }}</span></div>
+    </sc-if>
   </div>
 
 </div>
@@ -117,6 +128,10 @@ class Component extends DCLogic {
       elo: live.elo ?? this.props.elo ?? '2847',
       kd: live.kd ?? this.props.kd ?? '1.01',
       hs: live.hs ?? this.props.hs ?? '51',
+      hasRank: live.rank != null,
+      rankRegion: live.rank != null ? (live.region ?? 'na') : '',
+      rankNum: live.rank != null ? ' #' + live.rank : '',
+      rankTotal: live.rank != null && live.total ? ' / ' + live.total.toLocaleString() : '',
       statColor: st.statColor ?? (ink ? '#B9B9B4' : '#6E6E68'),
       kdColor: st.kdColor ?? (ink ? '#B9B9B4' : '#6E6E68'),
       hsColor: st.hsColor ?? (ink ? '#B9B9B4' : '#6E6E68'),
