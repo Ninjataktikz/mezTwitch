@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: #E8E8E5; }
+  </style>
+</helmet>
+<x-import component-from-global-scope="doc-page" from="./doc-page.js" size="letter" margin="0.9in" hint-size="100%,100%">
+  <div style="font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; color: #0E0E0E; font-size: 12pt; line-height: 1.6;">
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #0E0E0E; padding-bottom: 16px;">
+      <svg viewBox="0 0 390 80" width="82" role="img" aria-label="mez.">
+        <g fill="#0E0E0E"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
+        <rect x="368" y="58" width="22" height="22" fill="#2438E8"></rect>
+      </svg>
+      <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68; text-align: right;">
+        Phase 6 · OBS Production Architecture<br>July 2, 2026
+      </div>
+    </div>
+
+    <h1 style="font-size: 30pt; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; margin: 40px 0 8px;">the game gets the frames.<br>obs gets what's left.</h1>
+    <p style="font-size: 12pt; color: #6E6E68; margin: 0 0 36px; max-width: 5.6in;">CS2 performance is the product. Every choice below spends the minimum on production so aim doesn't pay for it.</p>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">01 — scene list (exactly six)</div>
+    <div style="border-top: 1px solid #0E0E0E; margin-bottom: 24px; font-size: 11pt;">
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">01 · starting</div><div>Browser source (starting-soon page, live countdown) + mic muted by default.</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">02 · game</div><div>Game capture (CS2, capture-specific-window) + webcam + stat strip. The default scene 95% of the time.</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">03 · review</div><div>Window capture (demo playback) at 1216×684 on the review scene layout + webcam.</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">04 · brb</div><div>BRB page. Mic auto-muted (tie mute to scene switch via hotkey macro).</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">05 · ending</div><div>Ending page. Raid target chosen while this shows.</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #0E0E0E;"><div style="font-family: monospace; font-size: 10pt;">06 · tech</div><div>Chalk field + mono "one moment." For crashes. Exists so panic never shows on stream.</div></div>
+    </div>
+    <p style="margin: 0 0 24px; font-size: 11pt;">Naming: scenes numbered <span style="font-family: monospace; font-size: 10pt;">01–06</span>; sources prefixed by scene (<span style="font-family: monospace; font-size: 10pt;">02-cam, 02-strip, all-alerts</span>). Shared sources (alerts, mic) live in a nested "all" scene included everywhere — one edit updates every scene.</p>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">02 — canvas &amp; encoding</div>
+    <ul style="margin: 0 0 24px; padding-left: 18px;">
+      <li style="margin-bottom: 4px;"><strong>Canvas 1920×1080 · output 1920×1080 · 60fps.</strong> He plays at high refresh; the stream doesn't need to. Do not stream 4K — Twitch transcodes aren't guaranteed and CS2 loses frames for nothing.</li>
+      <li style="margin-bottom: 4px;"><strong>Encoder: GPU hardware encoder (NVENC/AMF), never x264</strong> on a gaming PC — x264 steals CPU threads CS2 wants. Bitrate 6000 kbps CBR, keyframe 2s.</li>
+      <li style="margin-bottom: 4px;"><strong>If frames drop:</strong> first lower stream output to 1664×936 or 30fps — never lower the game.</li>
+      <li style="margin-bottom: 4px;"><strong>Recording</strong> (for YouTube/clips): separate higher-quality local recording (CQP 18–20) to a second drive, same encoder session.</li>
+      <li><strong>In CS2:</strong> uncap fps but set fps_max to a stable value; fullscreen exclusive; multicore rendering on.</li>
+    </ul>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">03 — audio (four channels, fixed)</div>
+    <div style="border-top: 1px solid #0E0E0E; margin-bottom: 24px; font-size: 11pt;">
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">mic</div><div>Noise suppression (RNNoise) + compressor + limiter. Target −12dB peaks.</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">game</div><div>−6dB. Footsteps are content; music isn't played over queue.</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">alerts</div><div>−18dB relative to game. One tick sound. Never louder than a footstep.</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #0E0E0E;"><div style="font-family: monospace; font-size: 10pt;">voip</div><div>Teammate comms routed but duckable — one hotkey mutes VOIP from stream (privacy + TOS safety with strangers in queue).</div></div>
+    </div>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">04 — hotkeys (muscle memory, one hand)</div>
+    <p style="margin: 0 0 24px; font-size: 11pt;"><span style="font-family: monospace; font-size: 10pt;">F13–F18</span> (or numpad if no macro keys): scene 01/02/04/05 · mic mute · VOIP mute. Scene switches during rounds are banned — switch between rounds only; the stinger covers the cut.</p>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">05 — weight rules</div>
+    <ul style="margin: 0;">
+      <li style="margin-bottom: 4px;">Max two browser sources loaded at once; scene pages unload when inactive ("shutdown source when not visible" on).</li>
+      <li style="margin-bottom: 4px;">No video-file loops on any scene — the system's stillness is also a performance budget.</li>
+      <li style="margin-bottom: 4px;">Static overlay elements exported as PNG, not browser sources, wherever nothing moves.</li>
+      <li>Alert queue capped at one at a time; alerts pause during clutch rounds via a single "focus" hotkey if ever needed.</li>
+    </ul>
+
+    <p style="margin: 32px 0 0; font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">phase 6 complete → phase 7, fable 5 prompts.</p>
+  </div>
+</x-import>
+</x-dc>
+</body>
+</html>

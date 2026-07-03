@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: #E8E8E5; }
+  </style>
+</helmet>
+<x-import component-from-global-scope="doc-page" from="./doc-page.js" size="letter" margin="0.9in" hint-size="100%,100%">
+  <div style="font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; color: #0E0E0E; font-size: 12pt; line-height: 1.6;">
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #0E0E0E; padding-bottom: 16px;">
+      <svg viewBox="0 0 390 80" width="82" role="img" aria-label="mez.">
+        <g fill="#0E0E0E"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
+        <rect x="368" y="58" width="22" height="22" fill="#2438E8"></rect>
+      </svg>
+      <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68; text-align: right;">
+        Phase 11 · Live Automations<br>July 3, 2026
+      </div>
+    </div>
+
+    <h1 style="font-size: 30pt; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; margin: 40px 0 8px;">the ledger<br>updates itself.</h1>
+    <p style="font-size: 12pt; color: #6E6E68; margin: 0 0 36px; max-width: 5.6in;">Every number on the broadcast now comes from the FACEIT API. Manual tweaks remain as fallbacks only. This page documents what runs itself and the two config recipes that finish the live layer.</p>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">01 — what updates automatically (refresh: every 5 min)</div>
+    <div style="border-top: 1px solid #0E0E0E; margin-bottom: 24px; font-size: 10.5pt;">
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">elo · k/d · hs%</div><div>Scenes 01, 02, 03, 04 + the ledger stat post. Live from FACEIT; sample numbers show only if the API is unreachable.</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">session delta</div><div>"+31" next to elo. Baseline = your elo at the first scene load of each day; resets automatically at the next stream day.</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">today w—l</div><div>Counted from today's FACEIT match history. Shows on the 01/04 baselines and the 02 stat strip.</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: monospace; font-size: 10pt;">last map</div><div>"last map — ancient 13:7 w" on the starting-soon footer; pre-fills the review scene's first round note (your typed note wins).</div></div>
+      <div style="display: grid; grid-template-columns: 1.7in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #0E0E0E;"><div style="font-family: monospace; font-size: 10pt;">weekly ledger</div><div>The 2048×2048 stat post fills week number, elo, weekly delta, k/d, hs% by itself — open the Social Kit, screenshot, post. Weekly delta baselines from the first open of each ISO week.</div></div>
+    </div>
+    <p style="margin: 0 0 28px; font-size: 10.5pt; color: #6E6E68;">Notes: deltas are stored in the browser source's local storage — they survive OBS restarts. The API key is a client-side key baked into the scenes; anyone who sees it can spend your (free) quota, so keep the tweaks panel off stream. Success/failure logs to the browser console as [faceit].</p>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">02 — real alerts via streamelements (config, ~15 min)</div>
+    <ul style="margin: 0 0 12px; padding-left: 18px;">
+      <li style="margin-bottom: 4px;">streamelements.com → sign in with Twitch → Streaming Tools → <strong>AlertBox</strong> → copy the overlay URL into an OBS browser source (in the shared "all" nested scene, top-center, y=140).</li>
+      <li style="margin-bottom: 4px;">Per alert type (follower / sub / raid / cheer): layout <strong>text only</strong> (no image, no gif), animation <strong>fade</strong> in/out, duration <strong>4s</strong>, TTS off.</li>
+      <li style="margin-bottom: 4px;">Text template: <span style="font-family: monospace; font-size: 10pt;">new follower — {name}</span> (lowercase, matching the built-in demo alert).</li>
+      <li style="margin-bottom: 4px;">Sound: upload <span style="font-family: monospace; font-size: 10pt;">exports/alert-tick.wav</span>, volume ≈ 25% (the −18dB law).</li>
+      <li>Custom CSS (paste in the AlertBox's CSS tab — class names may drift with SE updates):</li>
+    </ul>
+    <pre style="font-family: 'SF Mono', Consolas, monospace; font-size: 8.5pt; line-height: 1.6; background: #F2F2EF; border-left: 2px solid #2438E8; padding: 12px 16px; margin: 0 0 28px; white-space: pre-wrap;">*, .widget-container { font-family: 'Courier New', ui-monospace, monospace; }
+#alert-image, .alert-image { display: none !important; }
+#alert-text, .alert-text-wrap {
+  background: rgba(14,14,14,0.92); padding: 16px 28px;
+  text-transform: uppercase; letter-spacing: 0.14em;
+  font-size: 20px; color: #B9B9B4;
+}
+#alert-text .name, .alert-name, #alert-username {
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 700; font-size: 26px;
+  color: #FAFAF8; text-transform: none; letter-spacing: 0;
+}</pre>
+    <p style="margin: -16px 0 28px; font-size: 10.5pt; color: #6E6E68;">Once live, turn the built-in demo alert off: OBS 02 tweaks → alert → showAlert = off.</p>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">03 — chat overlay for non-gameplay scenes (config, ~5 min)</div>
+    <ul style="margin: 0 0 12px; padding-left: 18px;">
+      <li style="margin-bottom: 4px;">OBS browser source in scenes 03 / 04 only (never 02): URL <span style="font-family: monospace; font-size: 10pt;">https://www.twitch.tv/popout/mezcs_/chat</span>, size 420×600, right edge, 96px margins.</li>
+      <li>Paste into the browser source's <strong>Custom CSS</strong> field (Twitch renames classes occasionally — re-check after Twitch updates):</li>
+    </ul>
+    <pre style="font-family: 'SF Mono', Consolas, monospace; font-size: 8.5pt; line-height: 1.6; background: #F2F2EF; border-left: 2px solid #2438E8; padding: 12px 16px; margin: 0 0 28px; white-space: pre-wrap;">html, body, .stream-chat, .chat-room { background: transparent !important; }
+.stream-chat-header, .chat-input, .chat-room__notifications,
+.chat-badge, .chat-line__status { display: none !important; }
+.chat-line__message {
+  font-family: Helvetica, Arial, sans-serif !important;
+  font-size: 17px !important; color: #F2F2EF !important;
+  background: rgba(14,14,14,0.75); padding: 6px 12px !important;
+  margin: 4px 0;
+}
+.chat-line__username { font-weight: 700 !important; }</pre>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">04 — deliberately not automated</div>
+    <p style="margin: 0;">Live current-match score (official API doesn't expose it reliably mid-game) · round notes on the review scene beyond the first line (coaching judgement, not data) · the countdown length (stream discipline, not telemetry).</p>
+
+    <p style="margin: 32px 0 0; font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">phase 11 complete — the package is live-wired.</p>
+  </div>
+</x-import>
+</x-dc>
+</body>
+</html>

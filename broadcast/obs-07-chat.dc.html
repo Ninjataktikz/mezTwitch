@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: transparent; overflow: hidden; }
+  </style>
+</helmet>
+<div data-screen-label="Chat Overlay" style="position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; gap: 8px; padding: 16px; overflow: hidden; background: transparent; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;">
+  <sc-if value="{{ statusVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #6E6E68; padding: 6px 0;">{{ status }}</div>
+  </sc-if>
+  <sc-for list="{{ messages }}" as="msg" hint-placeholder-count="3">
+    <div style="background: rgba(14,14,14,0.85); padding: 8px 14px; max-width: 100%; box-sizing: border-box; font-size: 17px; line-height: 1.45; overflow-wrap: break-word;">
+      <span style="font-weight: 700; color: #FAFAF8;">{{ msg.name }}</span>
+      <span style="color: #B9B9B4;">&nbsp;·&nbsp;</span>
+      <span style="color: #F2F2EF;">{{ msg.text }}</span>
+    </div>
+  </sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 420, &quot;height&quot;: 600 },
+  &quot;channel&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;mezcs_&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;twitch&quot; },
+  &quot;demo&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;obs&quot; },
+  &quot;maxMessages&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 12, &quot;min&quot;: 4, &quot;max&quot;: 40, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;obs&quot; }
+}">
+class Component extends DCLogic {
+  state = { messages: [], connected: false };
+
+  componentDidMount() {
+    this._connect();
+  }
+
+  componentWillUnmount() {
+    this._dead = true;
+    clearTimeout(this._rt);
+    try { this._ws.close(); } catch (e) {}
+  }
+
+  _connect() {
+    const chan = (this.props.channel ?? 'mezcs_').toLowerCase().replace(/^#/, '');
+    try {
+      const ws = new WebSocket('wss://irc-ws.chat.twitch.tv:443');
+      this._ws = ws;
+      ws.onopen = () => {
+        ws.send('CAP REQ :twitch.tv/tags');
+        ws.send('NICK justinfan' + Math.floor(Math.random() * 80000 + 1000));
+        ws.send('JOIN #' + chan);
+        this.setState({ connected: true });
+      };
+      ws.onmessage = (ev) => {
+        String(ev.data).split('\r\n').forEach((line) => this._handle(line));
+      };
+      ws.onclose = () => {
+        this.setState({ connected: false });
+        if (!this._dead) this._rt = setTimeout(() => this._connect(), 3000);
+      };
+      ws.onerror = () => { try { ws.close(); } catch (e) {} };
+    } catch (e) {}
+  }
+
+  _handle(line) {
+    if (!line) return;
+    if (line.startsWith('PING')) { this._ws.send('PONG :tmi.twitch.tv'); return; }
+    const m = line.match(/^(?:@([^ ]+) )?:([^!]+)![^ ]+ PRIVMSG #[^ ]+ :(.*)$/);
+    if (!m) return;
+    const tags = {};
+    (m[1] || '').split(';').forEach((kv) => {
+      const i = kv.indexOf('=');
+      if (i > 0) tags[kv.slice(0, i)] = kv.slice(i + 1);
+    });
+    const name = tags['display-name'] || m[2];
+    const text = m[3].replace(/\u0001ACTION (.*)\u0001/, '$1');
+    this.setState((s) => ({ messages: s.messages.concat([{ name: name, text: text }]).slice(-(this.props.maxMessages ?? 12)) }));
+  }
+
+  renderVals() {
+    const demo = this.props.demo ?? true;
+    const real = this.state.messages;
+    const samples = [
+      { name: 'faceit_grinder', text: 'that b retake was clean' },
+      { name: 'viewer_name', text: 'what elo are you now' },
+      { name: 'mez', text: '2818. numbers in the ledger.' },
+    ];
+    return {
+      messages: real.length ? real : (demo ? samples : []),
+      statusVisible: demo && !real.length,
+      status: this.state.connected ? 'chat connected — showing sample lines until someone types' : 'connecting to chat…',
+    };
+  }
+}
+</script>
+</body>
+</html>

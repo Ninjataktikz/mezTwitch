@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: #0E0E0E; overflow: hidden; }
+    @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  </style>
+</helmet>
+<div data-screen-label="OBS Tech" style="width: 1920px; height: 1080px; background: #0E0E0E; position: relative; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; color: #FAFAF8; overflow: hidden;">
+  <div style="position: absolute; left: 96px; top: 50%; transform: translateY(-50%);">
+    <div style="font-size: 120px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.02;">one moment.</div>
+    <div style="display: flex; align-items: center; gap: 24px; margin-top: 40px;">
+      <div style="width: 22px; height: 22px; background: #6D7CFF; animation: mezblink 2s step-end infinite;"></div>
+      <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4;">technical reset — right back</div>
+    </div>
+  </div>
+  <div style="position: absolute; bottom: 96px; left: 96px;">
+    <svg viewBox="0 0 390 80" width="132" role="img" aria-label="mez.">
+      <g fill="#FAFAF8"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
+      <rect x="368" y="58" width="22" height="22" fill="#6D7CFF"></rect>
+    </svg>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
