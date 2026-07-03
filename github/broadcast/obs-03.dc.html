@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: #0E0E0E; overflow: hidden; }
+    @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  </style>
+</helmet>
+<div data-screen-label="OBS Review" style="width: 1920px; height: 1080px; background: {{ bg }}; position: relative; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; color: {{ fg }}; overflow: hidden;">
+
+  <!-- 03-capture · window capture zone 1216×684 -->
+  <div style="position: absolute; left: 96px; top: 96px; width: 1216px; height: 684px; border: 1px solid {{ frameline }}; box-sizing: border-box;">
+    <sc-if value="{{ demo }}" hint-placeholder-val="{{ true }}">
+      <div style="width: 100%; height: 100%; background: repeating-linear-gradient(45deg, #2A2A28 0, #2A2A28 24px, #2E2E2B 24px, #2E2E2B 48px); display: flex; align-items: center; justify-content: center;">
+        <div style="font-family: ui-monospace, monospace; font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">demo playback 1216×684 (window capture on top)</div>
+      </div>
+    </sc-if>
+  </div>
+
+  <!-- 03-cam · webcam right of the capture -->
+  <div style="position: absolute; left: 1360px; top: 96px; width: 464px; height: 261px;">
+    <sc-if value="{{ demo }}" hint-placeholder-val="{{ true }}">
+      <div style="width: 100%; height: 100%; border: 1px solid {{ frameline }}; box-sizing: border-box; background: repeating-linear-gradient(45deg, #2A2A28 0, #2A2A28 16px, #2E2E2B 16px, #2E2E2B 32px); display: flex; align-items: center; justify-content: center;">
+        <div style="font-family: ui-monospace, monospace; font-size: 16px; letter-spacing: 0.12em; text-transform: uppercase; color: #6E6E68;">webcam 464×261</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ live }}" hint-placeholder-val="{{ false }}">
+      <div style="width: 100%; height: 100%; border: 1px solid {{ frameline }}; box-sizing: border-box;"></div>
+    </sc-if>
+  </div>
+
+  <!-- 03-notes · round notes under the webcam -->
+  <div style="position: absolute; left: 1360px; top: 389px; width: 464px;">
+    <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase; color: {{ accent }}; margin-bottom: 20px; display: flex; align-items: center; gap: 14px;">
+      <div style="width: 14px; height: 14px; background: {{ accent }}; animation: mezblink 2s step-end infinite;"></div>
+      <div>now reviewing</div>
+    </div>
+    <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 24px; line-height: 1.9; color: {{ muted }}; border-top: 1px solid {{ hairline }}; padding-top: 20px;">
+      {{ noteMap }}<br>
+      {{ noteRound }}<br>
+      {{ noteFocus }}
+    </div>
+  </div>
+
+  <!-- 03-title · title block bottom-left -->
+  <div style="position: absolute; left: 96px; bottom: 96px;">
+    <div style="font-size: 72px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05;">{{ title }}</div>
+    <div style="font-family: ui-monospace, monospace; font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; color: {{ muted }}; margin-top: 16px;">{{ subtitle }}</div>
+  </div>
+
+  <!-- logo + numbers bottom-right -->
+  <div style="position: absolute; right: 96px; bottom: 96px; display: flex; flex-direction: column; align-items: flex-end; gap: 24px;">
+    <svg viewBox="0 0 390 80" width="132" role="img" aria-label="mez.">
+      <g fill="{{ fg }}"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
+      <rect x="368" y="58" width="22" height="22" fill="{{ accent }}"></rect>
+    </svg>
+    <div style="font-family: ui-monospace, monospace; font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; color: {{ muted }}; text-align: right; font-variant-numeric: tabular-nums;">elo {{ elo }} · k/d {{ kd }} · hs {{ hs }}%</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1920, &quot;height&quot;: 1080 },
+  &quot;demo&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;obs&quot; },
+  &quot;ground&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;ink&quot;, &quot;chalk&quot;], &quot;default&quot;: &quot;ink&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;obs&quot; },
+  &quot;title&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;the review.&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;copy&quot; },
+  &quot;subtitle&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;yesterday's loss, round by round&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;copy&quot; },
+  &quot;noteMap&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&gt; mirage — 11:13 L&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;round notes&quot; },
+  &quot;noteRound&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&gt; round 19 — 2v4 anti-eco&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;round notes&quot; },
+  &quot;noteFocus&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&gt; focus: b retake timing&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;round notes&quot; },
+  &quot;faceitNickname&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;mezcs_&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;faceit auto&quot; },
+  &quot;faceitApiKey&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;2a621cc6-c23e-4e00-bf76-2284c7d06489&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;faceit auto&quot; },
+  &quot;elo&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;2847&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;live numbers (fallback)&quot; },
+  &quot;kd&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;1.01&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;live numbers (fallback)&quot; },
+  &quot;hs&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;51&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;live numbers (fallback)&quot; }
+}">
+class Component extends DCLogic {
+  state = {};
+
+  componentDidMount() {
+    this._startFaceit();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._faceitTimer);
+  }
+
+  _startFaceit() {
+    const key = (this.props.faceitApiKey ?? '').trim();
+    const nick = (this.props.faceitNickname ?? 'mezcs_').trim();
+    if (!key || !nick) return;
+    const poll = () => {
+      import('./faceit.js')
+        .then((m) => m.fetchFaceitLive(nick, key).then((s) => this.setState({ live: s })))
+        .catch(() => {});
+    };
+    poll();
+    this._faceitTimer = setInterval(poll, 300000);
+  }
+
+  renderVals() {
+    const st = this.state || {};
+    const live = st.live || {};
+    const liveNote = live.last ? '> ' + live.last.map + ' — ' + live.last.score + ' ' + (live.last.win ? 'w' : 'l') : undefined;
+    const demo = this.props.demo ?? true;
+    const ink = (this.props.ground ?? 'ink') === 'ink';
+    return {
+      demo: demo,
+      live: !demo,
+      title: this.props.title ?? 'the review.',
+      subtitle: this.props.subtitle ?? "yesterday's loss, round by round",
+      noteMap: this.props.noteMap ?? liveNote ?? '> mirage — 11:13 L',
+      noteRound: this.props.noteRound ?? '> round 19 — 2v4 anti-eco',
+      noteFocus: this.props.noteFocus ?? '> focus: b retake timing',
+      elo: live.elo ?? this.props.elo ?? '2847',
+      kd: live.kd ?? this.props.kd ?? '1.01',
+      hs: live.hs ?? this.props.hs ?? '51',
+      bg: ink ? '#0E0E0E' : '#F2F2EF',
+      fg: ink ? '#FAFAF8' : '#0E0E0E',
+      muted: ink ? '#B9B9B4' : '#6E6E68',
+      hairline: ink ? '#2A2A28' : '#B9B9B4',
+      frameline: ink ? 'rgba(250,250,248,0.4)' : 'rgba(14,14,14,0.4)',
+      accent: ink ? '#6D7CFF' : '#2438E8',
+    };
+  }
+}
+</script>
+</body>
+</html>

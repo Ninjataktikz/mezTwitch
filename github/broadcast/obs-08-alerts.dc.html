@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: transparent; overflow: hidden; }
+    @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes mezalert { 0% { transform: translate(-50%, -24px); opacity: 0; } 6% { transform: translate(-50%, 0); opacity: 1; } 94% { transform: translate(-50%, 0); opacity: 1; } 100% { transform: translate(-50%, -24px); opacity: 0; } }
+  </style>
+</helmet>
+<div data-screen-label="Alerts" style="position: fixed; inset: 0; background: transparent; overflow: hidden; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;">
+
+  <sc-if value="{{ setupVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); background: rgba(14,14,14,0.94); padding: 40px 56px; text-align: center;">
+      <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4; line-height: 2.2;">
+        connect twitch — one time<br>
+        go to <span style="color: #FAFAF8;">twitch.tv/activate</span><br>
+        enter code <span style="color: #6D7CFF; font-size: 26px;">{{ setupCode }}</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ alertVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; top: 140px; left: 50%; height: 72px; background: rgba(14,14,14,0.92); display: flex; align-items: center; gap: 20px; padding: 0 28px; animation: mezalert 6s ease both;">
+      <div style="width: 16px; height: 16px; background: #6D7CFF; animation: mezblink 1s step-end 2;"></div>
+      <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4; white-space: nowrap;">{{ alertLabel }}</div>
+      <div style="font-size: 26px; font-weight: 700; color: #FAFAF8; white-space: nowrap;">{{ alertName }}</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ statusVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; left: 16px; bottom: 16px; font-family: ui-monospace, monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #6E6E68;">{{ status }}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1920, &quot;height&quot;: 1080 },
+  &quot;demo&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;obs&quot; },
+  &quot;testAlert&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;obs&quot; },
+  &quot;volume&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.25, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;sound&quot; },
+  &quot;clientId&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;1v5z90u55n6uwdlpf5jcs3oluae5uy&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;twitch auth&quot; },
+  &quot;accessToken&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;twitch auth&quot; }
+}">
+class Component extends DCLogic {
+  state = { queue: [], current: null, setup: null, status: 'starting…' };
+
+  componentDidMount() {
+    this._boot();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps && prevProps.testAlert !== this.props.testAlert) {
+      this._enqueue({ label: 'new follower', name: 'test_viewer' });
+    }
+  }
+
+  componentWillUnmount() {
+    this._dead = true;
+    clearTimeout(this._pt); clearTimeout(this._at); clearTimeout(this._rt);
+    try { this._ws.close(); } catch (e) {}
+  }
+
+  _cid() { return (this.props.clientId ?? '1v5z90u55n6uwdlpf5jcs3oluae5uy').trim(); }
+
+  _saveAuth(a) { try { localStorage.setItem('mez_tw_auth', JSON.stringify(a)); } catch (e) {} }
+
+  async _boot() {
+    let auth = null;
+    try { auth = JSON.parse(localStorage.getItem('mez_tw_auth')); } catch (e) {}
+    const manual = (this.props.accessToken ?? '').trim();
+    if (manual) auth = { access_token: manual };
+    let v = auth && auth.access_token ? await this._validate(auth.access_token) : null;
+    if (!v && auth && auth.refresh_token) {
+      const na = await this._refresh(auth.refresh_token);
+      if (na && na.access_token) { auth = na; this._saveAuth(na); v = await this._validate(na.access_token); }
+    }
+    if (v) {
+      this._token = auth.access_token;
+      this._uid = v.user_id;
+      this.setState({ setup: null, status: 'twitch connected — waiting for events' });
+      this._connect();
+    } else {
+      this._deviceFlow();
+    }
+  }
+
+  async _validate(t) {
+    try {
+      const r = await fetch('https://id.twitch.tv/oauth2/validate', { headers: { Authorization: 'OAuth ' + t } });
+      return r.ok ? await r.json() : null;
+    } catch (e) { return null; }
+  }
+
+  async _refresh(rt) {
+    try {
+      const r = await fetch('https://id.twitch.tv/oauth2/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(rt) + '&client_id=' + this._cid(),
+      });
+      return r.ok ? await r.json() : null;
+    } catch (e) { return null; }
+  }
+
+  async _deviceFlow() {
+    const scopes = 'moderator:read:followers channel:read:subscriptions bits:read';
+    try {
+      const r = await fetch('https://id.twitch.tv/oauth2/device', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'client_id=' + this._cid() + '&scopes=' + encodeURIComponent(scopes),
+      });
+      if (!r.ok) throw new Error('device start ' + r.status);
+      const d = await r.json();
+      this.setState({ setup: { code: d.user_code }, status: 'authorize once — alerts then run themselves' });
+      const poll = async () => {
+        if (this._dead) return;
+        try {
+          const tr = await fetch('https://id.twitch.tv/oauth2/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'client_id=' + this._cid() + '&scopes=' + encodeURIComponent(scopes) + '&device_code=' + encodeURIComponent(d.device_code) + '&grant_type=urn:ietf:params:oauth:grant-type:device_code',
+          });
+          if (tr.ok) {
+            this._saveAuth(await tr.json());
+            this.setState({ setup: null });
+            this._boot();
+            return;
+          }
+        } catch (e) {}
+        this._pt = setTimeout(poll, (d.interval || 5) * 1000);
+      };
+      this._pt = setTimeout(poll, (d.interval || 5) * 1000);
+    } catch (e) {
+      console.log('[alerts] device flow failed:', String(e));
+      this.setState({ status: 'auto-login blocked — paste an access token in tweaks' });
+    }
+  }
+
+  _connect(url) {
+    if (this._dead) return;
+    const ws = new WebSocket(url || 'wss://eventsub.wss.twitch.tv/ws');
+    this._ws = ws;
+    ws.onmessage = (ev) => {
+      let msg = null;
+      try { msg = JSON.parse(ev.data); } catch (e) { return; }
+      const t = msg.metadata && msg.metadata.message_type;
+      if (t === 'session_welcome') {
+        if (!url) this._subscribeAll(msg.payload.session.id);
+      } else if (t === 'session_reconnect') {
+        this._reconnectUrl = msg.payload.session.reconnect_url;
+        try { ws.close(); } catch (e) {}
+      } else if (t === 'notification') {
+        this._onEvent(msg.payload.subscription.type, msg.payload.event || {});
+      }
+    };
+    ws.onclose = () => {
+      if (this._dead) return;
+      const ru = this._reconnectUrl;
+      this._reconnectUrl = null;
+      this._rt = setTimeout(() => this._connect(ru), ru ? 0 : 3000);
+    };
+  }
+
+  _subscribeAll(sid) {
+    const uid = this._uid;
+    const subs = [
+      ['channel.follow', '2', { broadcaster_user_id: uid, moderator_user_id: uid }],
+      ['channel.subscribe', '1', { broadcaster_user_id: uid }],
+      ['channel.subscription.message', '1', { broadcaster_user_id: uid }],
+      ['channel.subscription.gift', '1', { broadcaster_user_id: uid }],
+      ['channel.cheer', '1', { broadcaster_user_id: uid }],
+      ['channel.raid', '1', { to_broadcaster_user_id: uid }],
+    ];
+    subs.forEach((s) => {
+      fetch('https://api.twitch.tv/helix/eventsub/subscriptions', {
+        method: 'POST',
+        headers: { 'Client-Id': this._cid(), Authorization: 'Bearer ' + this._token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: s[0], version: s[1], condition: s[2], transport: { method: 'websocket', session_id: sid } }),
+      }).then((r) => { if (!r.ok) console.log('[alerts] subscribe failed:', s[0], r.status); }).catch(() => {});
+    });
+  }
+
+  _onEvent(type, e) {
+    let label = null;
+    let name = e.user_name || e.user_login || '';
+    if (type === 'channel.follow') { label = 'new follower'; }
+    else if (type === 'channel.subscribe') { if (e.is_gift) return; label = 'new sub'; }
+    else if (type === 'channel.subscription.message') { label = 'resub · ' + (e.cumulative_months || 0) + ' months'; }
+    else if (type === 'channel.subscription.gift') { label = 'gifted ' + (e.total || 1) + (e.total === 1 ? ' sub' : ' subs'); if (e.is_anonymous) name = 'anonymous'; }
+    else if (type === 'channel.cheer') { label = 'cheered ' + (e.bits || 0) + ' bits'; if (e.is_anonymous) name = 'anonymous'; }
+    else if (type === 'channel.raid') { label = 'raid incoming · ' + (e.viewers || 0) + ' viewers'; name = e.from_broadcaster_user_name || ''; }
+    if (!label) return;
+    this._enqueue({ label: label, name: name });
+  }
+
+  _enqueue(a) {
+    this.setState((s) => ({ queue: s.queue.concat([a]) }));
+    setTimeout(() => this._pump(), 0);
+  }
+
+  _pump() {
+    if (this._showing || this._dead) return;
+    const q = this.state.queue;
+    if (!q.length) return;
+    this._showing = true;
+    this.setState({ current: q[0], queue: q.slice(1) });
+    try {
+      const a = new Audio('./exports/alert-tick.wav');
+      a.volume = this.props.volume ?? 0.25;
+      a.play().catch(() => {});
+    } catch (e) {}
+    this._at = setTimeout(() => {
+      this.setState({ current: null });
+      this._showing = false;
+      setTimeout(() => this._pump(), 400);
+    }, 6000);
+  }
+
+  renderVals() {
+    const cur = this.state.current;
+    return {
+      alertVisible: !!cur,
+      alertLabel: cur ? cur.label : '',
+      alertName: cur ? cur.name : '',
+      setupVisible: !!this.state.setup,
+      setupCode: this.state.setup ? this.state.setup.code : '',
+      statusVisible: (this.props.demo ?? true) && !cur && !this.state.setup,
+      status: this.state.status,
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: transparent; overflow: hidden; }
+    @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes mezalert { 0% { transform: translate(-50%, -24px); opacity: 0; } 8% { transform: translate(-50%, 0); opacity: 1; } 92% { transform: translate(-50%, 0); opacity: 1; } 100% { transform: translate(-50%, -24px); opacity: 0; } }
+  </style>
+</helmet>
+<div data-screen-label="OBS Game Overlay" style="width: 1920px; height: 1080px; position: relative; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; overflow: hidden; background: {{ canvasBg }};">
+
+  <sc-if value="{{ demo }}" hint-placeholder-val="{{ true }}">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">cs2 game capture</div>
+    <div style="position: absolute; top: 16px; left: 16px; width: 340px; height: 280px; border: 2px dashed #55554E; display: flex; align-items: flex-end; padding: 8px; box-sizing: border-box; font-family: ui-monospace, monospace; font-size: 16px; color: #6E6E68; text-transform: uppercase; letter-spacing: 0.1em;">radar (covered by strip)</div>
+    <div style="position: absolute; top: 16px; right: 16px; width: 420px; height: 360px; border: 2px dashed #55554E; display: flex; align-items: flex-end; justify-content: flex-end; padding: 8px; box-sizing: border-box; font-family: ui-monospace, monospace; font-size: 16px; color: #6E6E68; text-transform: uppercase; letter-spacing: 0.1em;">killfeed — keep clear</div>
+    <div style="position: absolute; top: 16px; left: 50%; transform: translateX(-50%); width: 340px; height: 110px; border: 2px dashed #55554E; display: flex; align-items: flex-end; justify-content: center; padding: 8px; box-sizing: border-box; font-family: ui-monospace, monospace; font-size: 16px; color: #6E6E68; text-transform: uppercase; letter-spacing: 0.1em;">score / timer</div>
+    <div style="position: absolute; bottom: 16px; left: 16px; width: 380px; height: 90px; border: 2px dashed #55554E; display: flex; align-items: flex-start; padding: 8px; box-sizing: border-box; font-family: ui-monospace, monospace; font-size: 16px; color: #6E6E68; text-transform: uppercase; letter-spacing: 0.1em;">health / armor</div>
+    <div style="position: absolute; bottom: 16px; right: 16px; width: 380px; height: 90px; border: 2px dashed #55554E; display: flex; align-items: flex-start; justify-content: flex-end; padding: 8px; box-sizing: border-box; font-family: ui-monospace, monospace; font-size: 16px; color: #6E6E68; text-transform: uppercase; letter-spacing: 0.1em;">ammo / weapon</div>
+  </sc-if>
+
+  <!-- 02-strip · stat strip top-left, covers radar corner -->
+  <div style="position: absolute; top: 24px; left: 24px; width: 320px; height: 88px; background: rgba(14,14,14,0.92); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-sizing: border-box;">
+    <svg viewBox="0 0 390 80" width="66" role="img" aria-label="mez.">
+      <g fill="#FAFAF8"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
+      <rect x="368" y="58" width="22" height="22" fill="#6D7CFF"></rect>
+    </svg>
+    <div style="text-align: right; font-family: ui-monospace, 'SF Mono', Consolas, monospace; color: #FAFAF8;">
+      <div style="font-size: 26px; font-variant-numeric: tabular-nums; line-height: 1.2;">{{ elo }}<span style="color: #6D7CFF;">{{ deltaStr }}</span></div>
+      <div style="font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: #B9B9B4;">{{ stripLabel }}</div>
+    </div>
+  </div>
+
+  <!-- 02-cam · webcam frame + nameplate, above health bar -->
+  <div style="position: absolute; bottom: 122px; left: 24px; width: 384px;">
+    <sc-if value="{{ demo }}" hint-placeholder-val="{{ true }}">
+      <div style="width: 384px; height: 216px; border: 1px solid rgba(250,250,248,0.4); box-sizing: border-box; background: repeating-linear-gradient(45deg, #2A2A28 0, #2A2A28 16px, #2E2E2B 16px, #2E2E2B 32px); display: flex; align-items: center; justify-content: center;">
+        <div style="font-family: ui-monospace, monospace; font-size: 16px; letter-spacing: 0.12em; text-transform: uppercase; color: #6E6E68;">webcam 384×216</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ live }}" hint-placeholder-val="{{ false }}">
+      <div style="width: 384px; height: 216px; box-sizing: border-box; border: 1px solid rgba(250,250,248,0.4);"></div>
+    </sc-if>
+    <div style="height: 34px; background: rgba(14,14,14,0.92); display: flex; align-items: center; justify-content: space-between; padding: 0 12px;">
+      <div style="font-family: ui-monospace, monospace; font-size: 16px; letter-spacing: 0.12em; color: #FAFAF8;">{{ name }}</div>
+      <div style="font-family: ui-monospace, monospace; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: #B9B9B4;">{{ tagline }}</div>
+    </div>
+  </div>
+
+  <!-- all-alerts · slides under score/timer zone -->
+  <sc-if value="{{ showAlert }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; top: 140px; left: 50%; height: 72px; background: rgba(14,14,14,0.92); display: flex; align-items: center; gap: 20px; padding: 0 28px; animation: mezalert 6s ease both;">
+      <div style="width: 16px; height: 16px; background: #6D7CFF; animation: mezblink 1s step-end 2;"></div>
+      <div style="font-family: ui-monospace, monospace; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4; white-space: nowrap;">{{ alertLabel }}</div>
+      <div style="font-family: Helvetica, Arial, sans-serif; font-size: 26px; font-weight: 700; color: #FAFAF8; white-space: nowrap;">{{ alertName }}</div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1920, &quot;height&quot;: 1080 },
+  &quot;demo&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;obs&quot; },
+  &quot;showAlert&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;alert&quot; },
+  &quot;alertLabel&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;new follower&quot;, &quot;new sub&quot;, &quot;raid incoming&quot;, &quot;cheered&quot;], &quot;default&quot;: &quot;new follower&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;alert&quot; },
+  &quot;alertName&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;viewer_name&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;alert&quot; },
+  &quot;faceitNickname&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;mezcs_&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;faceit auto&quot; },
+  &quot;faceitApiKey&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;2a621cc6-c23e-4e00-bf76-2284c7d06489&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;faceit auto&quot; },
+  &quot;elo&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;2847&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;live numbers (fallback)&quot; },
+  &quot;name&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;mez&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;nameplate&quot; },
+  &quot;tagline&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;rifler · 14&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;nameplate&quot; }
+}">
+class Component extends DCLogic {
+  state = {};
+
+  componentDidMount() {
+    this._startFaceit();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._faceitTimer);
+  }
+
+  _startFaceit() {
+    const key = (this.props.faceitApiKey ?? '').trim();
+    const nick = (this.props.faceitNickname ?? 'mezcs_').trim();
+    if (!key || !nick) return;
+    const poll = () => {
+      import('./faceit.js')
+        .then((m) => m.fetchFaceitLive(nick, key).then((s) => this.setState({ live: s, delta: m.sessionDelta(s.elo) })))
+        .catch(() => {});
+    };
+    poll();
+    this._faceitTimer = setInterval(poll, 300000);
+  }
+
+  renderVals() {
+    const st = this.state || {};
+    const live = st.live || {};
+    const demo = this.props.demo ?? true;
+    return {
+      demo: demo,
+      live: !demo,
+      canvasBg: demo
+        ? 'repeating-linear-gradient(45deg, #23231F 0, #23231F 24px, #26261F 24px, #26261F 48px)'
+        : 'transparent',
+      elo: live.elo ?? this.props.elo ?? '2847',
+      deltaStr: st.delta != null ? ' ' + (st.delta >= 0 ? '+' + st.delta : String(st.delta)) : '',
+      stripLabel: live.todayW != null ? 'faceit · today w' + live.todayW + '—l' + (live.todayL ?? 0) : 'faceit elo',
+      name: this.props.name ?? 'mez',
+      tagline: this.props.tagline ?? 'rifler · 14',
+      showAlert: this.props.showAlert ?? true,
+      alertLabel: this.props.alertLabel ?? 'new follower',
+      alertName: this.props.alertName ?? 'viewer_name',
+    };
+  }
+}
+</script>
+</body>
+</html>

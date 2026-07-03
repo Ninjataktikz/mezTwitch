@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: #E8E8E5; }
+  </style>
+</helmet>
+<x-import component-from-global-scope="doc-page" from="./doc-page.js" size="letter" margin="0.9in" hint-size="100%,100%">
+  <div style="font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; color: #0E0E0E; font-size: 12pt; line-height: 1.6;">
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #0E0E0E; padding-bottom: 16px;">
+      <svg viewBox="0 0 390 80" width="82" role="img" aria-label="mez.">
+        <g fill="#0E0E0E">
+          <rect width="112" height="18"></rect>
+          <rect width="20" height="80"></rect>
+          <rect x="46" width="20" height="80"></rect>
+          <rect x="92" width="20" height="80"></rect>
+          <g transform="translate(128,0)">
+            <rect width="76" height="18"></rect>
+            <rect width="20" height="80"></rect>
+            <rect y="31" width="76" height="18"></rect>
+            <rect x="56" y="18" width="20" height="13"></rect>
+            <rect y="62" width="76" height="18"></rect>
+          </g>
+          <g transform="translate(220,0)">
+            <rect width="68" height="18"></rect>
+            <polygon points="44,18 68,18 24,62 0,62"></polygon>
+            <rect y="62" width="128" height="18"></rect>
+          </g>
+        </g>
+        <rect x="368" y="58" width="22" height="22" fill="#2438E8"></rect>
+      </svg>
+      <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68; text-align: right;">
+        Phase 4 · Broadcast Design System<br>+ Phase 8 Motion Addendum · July 2, 2026
+      </div>
+    </div>
+
+    <h1 style="font-size: 30pt; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; margin: 40px 0 8px;">the web system,<br>at 1920×1080, in motion.</h1>
+    <p style="font-size: 12pt; color: #6E6E68; margin: 0 0 36px; max-width: 5.6in;">No new identity decisions. This document translates locked tokens to broadcast surfaces and extends the motion law for live production.</p>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">01 — color on broadcast</div>
+    <ul style="margin: 0 0 12px; padding-left: 18px;">
+      <li style="margin-bottom: 4px;"><strong>Full-frame scenes</strong> (starting soon, BRB, ending, offline): Ink <span style="font-family: 'SF Mono', Consolas, monospace; font-size: 10pt;">#0E0E0E</span> ground, Chalk <span style="font-family: 'SF Mono', Consolas, monospace; font-size: 10pt;">#FAFAF8</span> text — approved decision (July 2026): the broadcast lives on ink, sitting naturally beside dark gameplay. Rhythm comes from typography and the point, not surface inversion; chalk grounds are reserved for print and social.</li>
+      <li style="margin-bottom: 4px;"><strong>In-game elements</strong> sit on gameplay, which is visually hot. They use Ink at 92% opacity with Chalk text — never translucent white, never blur ("glassmorphism" is a gradient in disguise).</li>
+      <li style="margin-bottom: 4px;"><strong>Signal:</strong> one element per frame. On gameplay this is the point in the stat strip. On dark grounds use Signal/Dark <span style="font-family: 'SF Mono', Consolas, monospace; font-size: 10pt;">#6D7CFF</span>.</li>
+      <li><strong>CS2 HUD color</strong> set toward neutral white/low saturation so the game's own UI joins the system rather than fighting it.</li>
+    </ul>
+    <p style="margin: 0 0 28px;"></p>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">02 — broadcast type scale (at 1920×1080)</div>
+    <div style="border-top: 1px solid #0E0E0E; margin-bottom: 28px;">
+      <div style="display: grid; grid-template-columns: 2.1in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: 'SF Mono', Consolas, monospace; font-size: 10pt;">display 160/128</div><div>Full-frame scene headlines ("starting soon."). Helvetica 700, −2% tracking, lowercase.</div></div>
+      <div style="display: grid; grid-template-columns: 2.1in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: 'SF Mono', Consolas, monospace; font-size: 10pt;">stat 44–56 mono</div><div>Elo, K/D, countdowns. Tabular numerals, always. Numbers never animate by tweening — they cut.</div></div>
+      <div style="display: grid; grid-template-columns: 2.1in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: 'SF Mono', Consolas, monospace; font-size: 10pt;">label 22–24 mono</div><div>UPPERCASE, +14% tracking. Minimum broadcast size — nothing smaller ships to a 1080p frame.</div></div>
+      <div style="display: grid; grid-template-columns: 2.1in 1fr; gap: 16px; padding: 8px 0; border-bottom: 1px solid #0E0E0E;"><div style="font-family: 'SF Mono', Consolas, monospace; font-size: 10pt;">body 28–32</div><div>Sentence copy on full-frame scenes only. Helvetica 400, 1.5 line-height.</div></div>
+    </div>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">03 — geometry &amp; the 1080p grid</div>
+    <ul style="margin: 0 0 28px; padding-left: 18px;">
+      <li style="margin-bottom: 4px;">Module: <strong>8px at 1080p</strong> (scale ×2 for 4K exports). Frame safe margin: 48px all sides for full-frame scenes; overlay elements sit 24px off the frame edge.</li>
+      <li style="margin-bottom: 4px;">Radius 0, shadow none, border 1px hairline — unchanged. On gameplay, hairlines are Chalk at 40% so they define edges without glowing.</li>
+      <li style="margin-bottom: 4px;">Webcam: <strong>384×216</strong> (16:9, exactly 20% frame width), bottom-left above the health bar zone, 1px hairline, nameplate strip beneath in mono. No frame decoration — the crop IS the frame.</li>
+      <li>Stat strip: 320×88, top-left, deliberately covering the radar's screen position on the viewer's side (snipe guard). Wordmark left, elo/K-D mono right, the point as separator.</li>
+    </ul>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">04 — phase 8: motion addendum ("snap / hold / cut")</div>
+    <p style="margin: 0 0 10px;">The web law — snap (120ms) and hold — gains one broadcast verb:</p>
+    <div style="border-top: 1px solid #0E0E0E; margin-bottom: 12px;">
+      <div style="display: grid; grid-template-columns: 1.1in 1fr; gap: 16px; padding: 9px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: 'SF Mono', Consolas, monospace; font-size: 10pt;">snap</div><div>120ms, cubic-bezier(0.2,0,0,1), opacity/color only. Alerts enter and exit with snap. Countdown digits snap-cut, never roll.</div></div>
+      <div style="display: grid; grid-template-columns: 1.1in 1fr; gap: 16px; padding: 9px 0; border-bottom: 1px solid #E8E8E5;"><div style="font-family: 'SF Mono', Consolas, monospace; font-size: 10pt;">hold</div><div>Scenes are still. No ambient loops, no floating particles, no breathing gradients. The countdown and the blinking point are the only living things on a wait screen.</div></div>
+      <div style="display: grid; grid-template-columns: 1.1in 1fr; gap: 16px; padding: 9px 0; border-bottom: 1px solid #0E0E0E;"><div style="font-family: 'SF Mono', Consolas, monospace; font-size: 10pt;">cut</div><div><strong>New.</strong> Scene transitions are hard cuts through a 240ms full-frame ink wipe: ink slides in (120ms), the point blinks once at center, ink slides out (120ms). This is the stinger. Nothing else is sanctioned for transitions.</div></div>
+    </div>
+    <ul style="margin: 0 0 28px; padding-left: 18px;">
+      <li style="margin-bottom: 4px;"><strong>Alert grammar:</strong> ink strip snaps in at top-center of gameplay (never near HUD corners) · mono label + name · point blinks once · holds 3s · snaps out. Identical skeleton for follow/sub/raid; only the label changes. Sound: a single soft tick, −18dB relative to game.</li>
+      <li style="margin-bottom: 4px;"><strong>Logo reveal:</strong> letters do not animate. The point cuts in, blinks once, wordmark cuts in beside it. 480ms total, then hold.</li>
+      <li><strong>Kill/clutch graphics: none live.</strong> The game already renders kills. Clutch typography belongs to clips and social, where mez. isn't mid-round.</li>
+    </ul>
+
+    <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #2438E8; margin-bottom: 10px;">05 — do / don't</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 8px;">
+      <div style="border: 1px solid #0E0E0E; padding: 14px 18px;">
+        <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 6px;">do</div>
+        <div style="font-size: 11pt;">Empty chalk fields · one blue square · mono numbers · hairlines · hard cuts · silence</div>
+      </div>
+      <div style="border: 1px solid #B9B9B4; padding: 14px 18px; color: #6E6E68;">
+        <div style="font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 6px;">don't</div>
+        <div style="font-size: 11pt;">Glow · gradients · particles · camera borders · tickers · rounded anything · a second accent · easing theatrics</div>
+      </div>
+    </div>
+
+    <p style="margin: 32px 0 0; font-family: 'SF Mono', Consolas, monospace; font-size: 9pt; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">phases 4 + 8 complete → broadcast kit (built), then phase 5 plan.</p>
+  </div>
+</x-import>
+</x-dc>
+</body>
+</html>
