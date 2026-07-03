@@ -131,7 +131,8 @@ class Component extends DCLogic {
   renderVals() {
     const st = this.state || {};
     const live = st.live || {};
-    const demo = this.props.demo ?? true;
+    const liveUrl = new URLSearchParams(window.location.search).get('live') === '1';
+    const demo = this.props.demo ?? !liveUrl;
     const camMode = this.props.camMode ?? 'brand';
     return {
       demo: demo,

@@ -116,7 +116,8 @@ class Component extends DCLogic {
     const st = this.state || {};
     const live = st.live || {};
     const liveNote = live.last ? '> ' + live.last.map + ' — ' + live.last.score + ' ' + (live.last.win ? 'w' : 'l') : undefined;
-    const demo = this.props.demo ?? true;
+    const liveUrl = new URLSearchParams(window.location.search).get('live') === '1';
+    const demo = this.props.demo ?? !liveUrl;
     const ink = (this.props.ground ?? 'ink') === 'ink';
     const now = new Date();
     return {
