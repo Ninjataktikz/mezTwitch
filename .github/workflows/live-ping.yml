@@ -33,9 +33,9 @@ jobs:
             const s = await sr.json();
             const live = !!(s.data && s.data.length);
             const path = "data/live.json";
-            const prev = fs.existsSync(path) ? JSON.parse(fs.readFileSync(path, "utf8")) : { live: false };
-            if (live === !!prev.live) { console.log("no change, live =", live); process.exit(0); }
-            if (live && process.env.DISCORD_WEBHOOK) {
+            const prev = fs.existsSync(path) ? JSON.parse(fs.readFileSync(path, "utf8")) : null;
+            if (prev && live === !!prev.live) { console.log("no change, live =", live); process.exit(0); }
+            if (prev && live && process.env.DISCORD_WEBHOOK) {
               const title = (s.data[0].title || "faceit — the grind").toLowerCase();
               await fetch(process.env.DISCORD_WEBHOOK, {
                 method: "POST",
@@ -45,11 +45,12 @@ jobs:
               console.log("pinged discord");
             }
             fs.writeFileSync(path, JSON.stringify({ live: live }));
+            console.log("state saved, live =", live);
           })();
           '
       - name: commit
         run: |
           git config user.name "ledger-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/live.json
+          git add -A data
           git diff --cached --quiet || (git commit -m "live state change" && git push)
