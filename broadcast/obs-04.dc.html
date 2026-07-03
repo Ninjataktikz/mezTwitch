@@ -13,23 +13,21 @@
     @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
   </style>
 </helmet>
-<div data-screen-label="OBS BRB" style="width: 1920px; height: 1080px; background: #0E0E0E; position: relative; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; color: #FAFAF8; overflow: hidden;">
-  <div style="position: absolute; top: 96px; left: 96px;">
-    <svg viewBox="0 0 390 80" width="132" role="img" aria-label="mez.">
+<div data-screen-label="OBS BRB" style="width: 1920px; height: 1080px; background: #0E0E0E; position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; color: #FAFAF8; overflow: hidden;">
+  <div style="position: absolute; top: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">mez//standby</div>
+  <div style="position: absolute; top: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">{{ dateStr }}</div>
+  <div style="position: absolute; bottom: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">faceit/mezcs_</div>
+  <div style="position: absolute; bottom: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">1920×1080/60</div>
+  <div style="position: absolute; top: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: #2A2A28;"></div>
+  <div style="position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: #2A2A28;"></div>
+  <div style="position: absolute; left: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: #2A2A28;"></div>
+  <div style="position: absolute; right: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: #2A2A28;"></div>
+  <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); text-align: center; white-space: nowrap;">
+    <svg viewBox="0 0 390 80" width="220" role="img" aria-label="mez." style="display: block; margin: 0 auto;">
       <g fill="#FAFAF8"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
       <rect x="368" y="58" width="22" height="22" fill="#6D7CFF"></rect>
     </svg>
-  </div>
-  <div style="position: absolute; left: 96px; bottom: 320px;">
-    <div style="font-size: 160px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.02;">brb.</div>
-    <div style="display: flex; align-items: center; gap: 24px; margin-top: 48px;">
-      <div style="width: 22px; height: 22px; background: #6D7CFF; animation: mezblink 2s step-end infinite;"></div>
-      <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 28px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4;">{{ message }}</div>
-    </div>
-  </div>
-  <div style="position: absolute; left: 96px; right: 96px; bottom: 96px; display: flex; justify-content: space-between; border-top: 1px solid #2A2A28; padding-top: 24px; font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">
-    <div>twitch.tv/mezcs_</div>
-    <div style="font-variant-numeric: tabular-nums;">elo {{ elo }}{{ deltaStr }} · k/d {{ kd }} · hs {{ hs }}%{{ todayStr }}</div>
+    <div style="font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4; margin-top: 72px; line-height: 2;">standby<br>{{ message }}<br><span style="color: {{ statColor }};">elo {{ elo }}</span><span style="color: #FAFAF8;"> · </span><span style="color: {{ kdColor }};">k/d {{ kd }}</span><span style="color: #FAFAF8;"> · </span><span style="color: {{ hsColor }};">hs {{ hs }}%</span> <span style="display: inline-block; width: 14px; height: 14px; background: #6D7CFF; animation: mezblink 2s step-end infinite;"></span></div>
   </div>
 </div>
 </x-dc>
@@ -59,7 +57,7 @@ class Component extends DCLogic {
     if (!key || !nick) return;
     const poll = () => {
       import('./faceit.js')
-        .then((m) => m.fetchFaceitLive(nick, key).then((s) => this.setState({ live: s, delta: m.sessionDelta(s.elo) })))
+        .then((m) => m.fetchFaceitLive(nick, key).then((s) => this.setState({ live: s, statColor: m.levelColor(s.level), kdColor: m.kdColor(s.kd), hsColor: m.hsColor(s.hs) })))
         .catch(() => {});
     };
     poll();
@@ -69,13 +67,16 @@ class Component extends DCLogic {
   renderVals() {
     const st = this.state || {};
     const live = st.live || {};
+    const now = new Date();
     return {
+      dateStr: now.getFullYear() + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + String(now.getDate()).padStart(2, '0'),
       message: this.props.message ?? 'back in a moment — chat stays open',
       elo: live.elo ?? this.props.elo ?? '2847',
       kd: live.kd ?? this.props.kd ?? '1.01',
       hs: live.hs ?? this.props.hs ?? '51',
-      deltaStr: st.delta != null ? ' ' + (st.delta >= 0 ? '+' + st.delta : String(st.delta)) : '',
-      todayStr: live.todayW != null ? ' · today w' + live.todayW + '—l' + (live.todayL ?? 0) : '',
+      statColor: st.statColor ?? '#FAFAF8',
+      kdColor: st.kdColor ?? '#B9B9B4',
+      hsColor: st.hsColor ?? '#B9B9B4',
     };
   }
 }

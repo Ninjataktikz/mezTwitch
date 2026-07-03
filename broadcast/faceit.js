@@ -13,6 +13,7 @@ export async function fetchFaceitLive(nickname, apiKey) {
   const game = player.games && player.games[gameId];
   const out = {
     elo: game && game.faceit_elo != null ? String(game.faceit_elo) : undefined,
+    level: game && game.skill_level != null ? game.skill_level : undefined,
     kd: undefined, hs: undefined, todayW: undefined, todayL: undefined, last: undefined,
   };
   // lifetime averages
@@ -67,6 +68,34 @@ export async function fetchFaceitLive(nickname, apiKey) {
 
 // legacy name kept for compatibility
 export const fetchFaceitStats = fetchFaceitLive;
+
+// FACEIT's official skill-level colors (matches faceit.com)
+export function levelColor(level) {
+  if (level == null) return null;
+  if (level >= 10) return '#FE1F00';
+  if (level >= 8) return '#FF6309';
+  if (level >= 4) return '#FFC800';
+  if (level >= 2) return '#1CE400';
+  return '#EEEEEE';
+}
+
+// performance grading in the FACEIT palette (API sends no colors for these)
+export function kdColor(kd) {
+  const v = parseFloat(kd);
+  if (isNaN(v)) return null;
+  if (v >= 1.2) return '#1CE400';
+  if (v >= 1.0) return '#FFC800';
+  if (v >= 0.85) return '#FF6309';
+  return '#FE1F00';
+}
+export function hsColor(hs) {
+  const v = parseFloat(hs);
+  if (isNaN(v)) return null;
+  if (v >= 55) return '#1CE400';
+  if (v >= 45) return '#FFC800';
+  if (v >= 35) return '#FF6309';
+  return '#FE1F00';
+}
 
 function snapshotDelta(key, id, elo) {
   if (elo == null) return null;

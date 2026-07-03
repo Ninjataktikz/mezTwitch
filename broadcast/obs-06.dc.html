@@ -13,21 +13,37 @@
     @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
   </style>
 </helmet>
-<div data-screen-label="OBS Tech" style="width: 1920px; height: 1080px; background: #0E0E0E; position: relative; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; color: #FAFAF8; overflow: hidden;">
-  <div style="position: absolute; left: 96px; top: 50%; transform: translateY(-50%);">
-    <div style="font-size: 120px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.02;">one moment.</div>
-    <div style="display: flex; align-items: center; gap: 24px; margin-top: 40px;">
-      <div style="width: 22px; height: 22px; background: #6D7CFF; animation: mezblink 2s step-end infinite;"></div>
-      <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4;">technical reset — right back</div>
-    </div>
-  </div>
-  <div style="position: absolute; bottom: 96px; left: 96px;">
-    <svg viewBox="0 0 390 80" width="132" role="img" aria-label="mez.">
+<div data-screen-label="OBS Tech" style="width: 1920px; height: 1080px; background: #0E0E0E; position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; color: #FAFAF8; overflow: hidden;">
+  <div style="position: absolute; top: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">mez//tech</div>
+  <div style="position: absolute; top: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">{{ dateStr }}</div>
+  <div style="position: absolute; bottom: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">faceit/mezcs_</div>
+  <div style="position: absolute; bottom: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">1920×1080/60</div>
+  <div style="position: absolute; top: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: #2A2A28;"></div>
+  <div style="position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: #2A2A28;"></div>
+  <div style="position: absolute; left: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: #2A2A28;"></div>
+  <div style="position: absolute; right: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: #2A2A28;"></div>
+  <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); text-align: center; white-space: nowrap;">
+    <svg viewBox="0 0 390 80" width="220" role="img" aria-label="mez." style="display: block; margin: 0 auto;">
       <g fill="#FAFAF8"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
       <rect x="368" y="58" width="22" height="22" fill="#6D7CFF"></rect>
     </svg>
+    <div style="font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4; margin-top: 72px; line-height: 2;"><span style="color: #FAFAF8;">signal interrupted — one moment.</span> <span style="display: inline-block; width: 14px; height: 14px; background: #6D7CFF; animation: mezblink 1s step-end infinite;"></span><br>{{ message }}</div>
   </div>
 </div>
 </x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1920, &quot;height&quot;: 1080 },
+  &quot;message&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;technical reset — right back&quot;, &quot;tsType&quot;: &quot;string&quot; }
+}">
+class Component extends DCLogic {
+  renderVals() {
+    const now = new Date();
+    return {
+      dateStr: now.getFullYear() + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + String(now.getDate()).padStart(2, '0'),
+      message: this.props.message ?? 'technical reset — right back',
+    };
+  }
+}
+</script>
 </body>
 </html>

@@ -14,10 +14,10 @@
     @keyframes mezalert { 0% { transform: translate(-50%, -24px); opacity: 0; } 6% { transform: translate(-50%, 0); opacity: 1; } 94% { transform: translate(-50%, 0); opacity: 1; } 100% { transform: translate(-50%, -24px); opacity: 0; } }
   </style>
 </helmet>
-<div data-screen-label="Alerts" style="position: fixed; inset: 0; background: transparent; overflow: hidden; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;">
+<div data-screen-label="Alerts" style="position: fixed; inset: 0; background: transparent; overflow: hidden; font-family: ui-monospace, 'SF Mono', Consolas, monospace;">
 
   <sc-if value="{{ setupVisible }}" hint-placeholder-val="{{ false }}">
-    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); background: rgba(14,14,14,0.94); padding: 40px 56px; text-align: center;">
+    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); background: rgba(14,14,14,0.94); border: 1px solid #2A2A28; box-sizing: border-box; padding: 40px 56px; text-align: center;">
       <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4; line-height: 2.2;">
         connect twitch — one time<br>
         go to <span style="color: #FAFAF8;">twitch.tv/activate</span><br>
@@ -27,7 +27,7 @@
   </sc-if>
 
   <sc-if value="{{ alertVisible }}" hint-placeholder-val="{{ false }}">
-    <div style="position: absolute; top: 140px; left: 50%; height: 72px; background: rgba(14,14,14,0.92); display: flex; align-items: center; gap: 20px; padding: 0 28px; animation: mezalert 6s ease both;">
+    <div style="position: absolute; top: 140px; left: 50%; height: 72px; background: rgba(14,14,14,0.92); border: 1px solid #2A2A28; box-sizing: border-box; display: flex; align-items: center; gap: 20px; padding: 0 28px; animation: mezalert 6s ease both;">
       <div style="width: 16px; height: 16px; background: #6D7CFF; animation: mezblink 1s step-end 2;"></div>
       <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4; white-space: nowrap;">{{ alertLabel }}</div>
       <div style="font-size: 26px; font-weight: 700; color: #FAFAF8; white-space: nowrap;">{{ alertName }}</div>

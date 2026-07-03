@@ -12,12 +12,12 @@
     body { margin: 0; background: transparent; overflow: hidden; }
   </style>
 </helmet>
-<div data-screen-label="Chat Overlay" style="position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; gap: 8px; padding: 16px; overflow: hidden; background: transparent; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;">
+<div data-screen-label="Chat Overlay" style="position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; gap: 8px; padding: 16px; overflow: hidden; background: transparent; font-family: ui-monospace, 'SF Mono', Consolas, monospace;">
   <sc-if value="{{ statusVisible }}" hint-placeholder-val="{{ false }}">
     <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #6E6E68; padding: 6px 0;">{{ status }}</div>
   </sc-if>
   <sc-for list="{{ messages }}" as="msg" hint-placeholder-count="3">
-    <div style="background: rgba(14,14,14,0.85); padding: 8px 14px; max-width: 100%; box-sizing: border-box; font-size: 17px; line-height: 1.45; overflow-wrap: break-word;">
+    <div style="background: rgba(14,14,14,0.85); border: 1px solid #2A2A28; padding: 8px 14px; max-width: 100%; box-sizing: border-box; font-size: 16px; line-height: 1.5; overflow-wrap: break-word;">
       <span style="font-weight: 700; color: #FAFAF8;">{{ msg.name }}</span>
       <span style="color: #B9B9B4;">&nbsp;·&nbsp;</span>
       <span style="color: #F2F2EF;">{{ msg.text }}</span>

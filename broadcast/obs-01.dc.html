@@ -10,34 +10,34 @@
 <helmet>
   <style>
     body { margin: 0; background: #0E0E0E; overflow: hidden; }
-    @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes mezping { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(3.2); opacity: 0; } }
+    @keyframes mezbreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
   </style>
 </helmet>
-<div data-screen-label="OBS Starting Soon" style="width: 1920px; height: 1080px; background: {{ bg }}; position: relative; font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif; color: {{ fg }}; overflow: hidden;">
-  <div style="position: absolute; top: 96px; left: 96px;">
-    <svg viewBox="0 0 390 80" width="132" role="img" aria-label="mez.">
-      <g fill="{{ fg }}"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
-      <rect x="368" y="58" width="22" height="22" fill="{{ signal }}"></rect>
-    </svg>
-  </div>
-  <div style="position: absolute; top: 96px; right: 96px; font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; color: {{ muted }};">twitch.tv/mezcs_</div>
-  <div style="position: absolute; left: 96px; bottom: 320px;">
-    <div style="font-size: 160px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.02;">starting soon.</div>
-    <div style="display: flex; align-items: center; gap: 24px; margin-top: 48px;">
-      <div style="width: 22px; height: 22px; background: {{ signal }}; animation: mezblink 2s step-end infinite;"></div>
-      <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 56px; font-variant-numeric: tabular-nums;">{{ countdown }}</div>
+<div data-screen-label="OBS Starting Soon" style="width: 1920px; height: 1080px; background: {{ bg }}; position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; color: {{ fg }}; overflow: hidden;">
+  <div style="position: absolute; top: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">mez//broadcast</div>
+  <div style="position: absolute; top: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">{{ dateStr }}</div>
+  <div style="position: absolute; bottom: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">faceit/mezcs_</div>
+  <div style="position: absolute; bottom: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">starting soon</div>
+  <div style="position: absolute; top: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: {{ hairline }};"></div>
+  <div style="position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: {{ hairline }};"></div>
+  <div style="position: absolute; left: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: {{ hairline }};"></div>
+  <div style="position: absolute; right: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: {{ hairline }};"></div>
+  <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); text-align: center; white-space: nowrap;">
+    <div style="position: relative; width: 360px; margin: 0 auto;">
+      <svg viewBox="0 0 390 80" width="360" role="img" aria-label="mez." style="display: block;">
+        <g fill="{{ fg }}"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
+      </svg>
+      <div style="position: absolute; left: 339px; top: 53px; width: 21px; height: 21px; background: {{ signal }}; animation: mezbreathe 2.4s ease-in-out infinite;"></div>
+      <div style="position: absolute; left: 339px; top: 53px; width: 21px; height: 21px; border: 1px solid {{ signal }}; animation: mezping 2.4s ease-out infinite;"></div>
     </div>
-  </div>
-  <div style="position: absolute; left: 96px; right: 96px; bottom: 96px; display: flex; justify-content: space-between; border-top: 1px solid {{ hairline }}; padding-top: 24px; font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; color: {{ muted }};">
-    <div>{{ footerLeft }}</div>
-    <div style="font-variant-numeric: tabular-nums;">elo {{ elo }}{{ deltaStr }} · k/d {{ kd }} · hs {{ hs }}%{{ todayStr }}</div>
+    <div style="font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; margin-top: 72px;"><span style="color: {{ statColor }};">elo {{ elo }}</span><span style="color: {{ fg }};"> · </span><span style="color: {{ kdColor }};">k/d {{ kd }}</span><span style="color: {{ fg }};"> · </span><span style="color: {{ hsColor }};">hs {{ hs }}%</span></div>
   </div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{
   &quot;$preview&quot;: { &quot;width&quot;: 1920, &quot;height&quot;: 1080 },
   &quot;ground&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;ink&quot;, &quot;chalk&quot;], &quot;default&quot;: &quot;ink&quot;, &quot;tsType&quot;: &quot;string&quot; },
-  &quot;countdownMinutes&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 5, &quot;min&quot;: 1, &quot;max&quot;: 30, &quot;tsType&quot;: &quot;number&quot; },
   &quot;faceitNickname&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;mezcs_&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;faceit auto&quot; },
   &quot;faceitApiKey&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;2a621cc6-c23e-4e00-bf76-2284c7d06489&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;faceit auto&quot; },
   &quot;elo&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;2847&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;live numbers (fallback)&quot; },
@@ -45,22 +45,13 @@
   &quot;hs&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;51&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;live numbers (fallback)&quot; }
 }">
 class Component extends DCLogic {
-  state = { secondsLeft: null };
+  state = {};
 
   componentDidMount() {
     this._startFaceit();
-    const mins = this.props.countdownMinutes ?? 5;
-    this.setState({ secondsLeft: mins * 60 });
-    this._timer = setInterval(() => {
-      this.setState((s) => {
-        const next = (s.secondsLeft ?? (this.props.countdownMinutes ?? 5) * 60) - 1;
-        return { secondsLeft: next <= 0 ? 0 : next };
-      });
-    }, 1000);
   }
 
   componentWillUnmount() {
-    clearInterval(this._timer);
     clearInterval(this._faceitTimer);
   }
 
@@ -70,7 +61,7 @@ class Component extends DCLogic {
     if (!key || !nick) return;
     const poll = () => {
       import('./faceit.js')
-        .then((m) => m.fetchFaceitLive(nick, key).then((s) => this.setState({ live: s, delta: m.sessionDelta(s.elo) })))
+        .then((m) => m.fetchFaceitLive(nick, key).then((s) => this.setState({ live: s, statColor: m.levelColor(s.level), kdColor: m.kdColor(s.kd), hsColor: m.hsColor(s.hs) })))
         .catch(() => {});
     };
     poll();
@@ -80,19 +71,16 @@ class Component extends DCLogic {
   renderVals() {
     const st = this.state || {};
     const live = st.live || {};
-    const mins = this.props.countdownMinutes ?? 5;
-    const s = this.state.secondsLeft ?? mins * 60;
-    const mm = String(Math.floor(s / 60)).padStart(2, '0');
-    const ss = String(s % 60).padStart(2, '0');
     const ink = (this.props.ground ?? 'ink') === 'ink';
+    const now = new Date();
     return {
-      countdown: s === 0 ? 'now.' : mm + ':' + ss,
+      dateStr: now.getFullYear() + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + String(now.getDate()).padStart(2, '0'),
       elo: live.elo ?? this.props.elo ?? '2847',
       kd: live.kd ?? this.props.kd ?? '1.01',
       hs: live.hs ?? this.props.hs ?? '51',
-      deltaStr: st.delta != null ? ' ' + (st.delta >= 0 ? '+' + st.delta : String(st.delta)) : '',
-      todayStr: live.todayW != null ? ' · today w' + live.todayW + '—l' + (live.todayL ?? 0) : '',
-      footerLeft: live.last ? 'last map — ' + live.last.map + ' ' + live.last.score + ' ' + (live.last.win ? 'w' : 'l') : 'faceit — the grind',
+      statColor: st.statColor ?? (ink ? '#B9B9B4' : '#6E6E68'),
+      kdColor: st.kdColor ?? (ink ? '#B9B9B4' : '#6E6E68'),
+      hsColor: st.hsColor ?? (ink ? '#B9B9B4' : '#6E6E68'),
       bg: ink ? '#0E0E0E' : '#F2F2EF',
       fg: ink ? '#FAFAF8' : '#0E0E0E',
       muted: ink ? '#B9B9B4' : '#6E6E68',
