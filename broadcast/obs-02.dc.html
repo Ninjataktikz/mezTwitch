@@ -11,10 +11,8 @@
   <style>
     html, body { height: 100%; }
     body { margin: 0; background: transparent; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-    @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     @keyframes mezping { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(3.2); opacity: 0; } }
     @keyframes mezbreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
-    @keyframes mezalert { 0% { transform: translate(-50%, -24px); opacity: 0; } 8% { transform: translate(-50%, 0); opacity: 1; } 92% { transform: translate(-50%, 0); opacity: 1; } 100% { transform: translate(-50%, -24px); opacity: 0; } }
   </style>
   <script>
     (function () {
@@ -24,85 +22,32 @@
     })();
   </script>
 </helmet>
-<div data-screen-label="OBS Game Overlay" style="width: 1920px; height: 1080px; flex-shrink: 0; transform: scale(var(--mezscale, 1)); position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; overflow: hidden; background: {{ canvasBg }};">
+<div data-screen-label="OBS Game Overlay" style="width: 1920px; height: 1080px; flex-shrink: 0; transform: scale(var(--mezscale, 1)); position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; overflow: hidden; background: transparent;">
 
-  <sc-if value="{{ demo }}" hint-placeholder-val="{{ true }}">
-    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 24px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">cs2 game capture</div>
-    <div style="position: absolute; top: 16px; left: 16px; width: 340px; height: 280px; border: 2px dashed #55554E; display: flex; align-items: flex-end; padding: 8px; box-sizing: border-box; font-size: 16px; color: #6E6E68; text-transform: uppercase; letter-spacing: 0.1em;">radar (covered by cam)</div>
-    <div style="position: absolute; top: 16px; right: 16px; width: 420px; height: 360px; border: 2px dashed #55554E; display: flex; align-items: flex-end; justify-content: flex-end; padding: 8px; box-sizing: border-box; font-size: 16px; color: #6E6E68; text-transform: uppercase; letter-spacing: 0.1em;">killfeed — keep clear</div>
-    <div style="position: absolute; top: 16px; left: 50%; transform: translateX(-50%); width: 340px; height: 110px; border: 2px dashed #55554E; display: flex; align-items: flex-end; justify-content: center; padding: 8px; box-sizing: border-box; font-size: 16px; color: #6E6E68; text-transform: uppercase; letter-spacing: 0.1em;">score / timer</div>
-    <div style="position: absolute; bottom: 16px; left: 16px; width: 380px; height: 90px; border: 2px dashed #55554E; display: flex; align-items: flex-start; padding: 8px; box-sizing: border-box; font-size: 16px; color: #6E6E68; text-transform: uppercase; letter-spacing: 0.1em;">health / armor</div>
-    <div style="position: absolute; bottom: 16px; right: 16px; width: 380px; height: 90px; border: 2px dashed #55554E; display: flex; align-items: flex-start; justify-content: flex-end; padding: 8px; box-sizing: border-box; font-size: 16px; color: #6E6E68; text-transform: uppercase; letter-spacing: 0.1em;">ammo / weapon</div>
-  </sc-if>
-
-  <!-- 02-cam · webcam frame + nameplate, top-left (radar snipe-guard) -->
-  <div style="position: absolute; top: 24px; left: 24px; width: 384px;">
-    <sc-if value="{{ demoCam }}" hint-placeholder-val="{{ true }}">
-      <div style="width: 384px; height: 216px; border: 1px solid #2A2A28; box-sizing: border-box; background: repeating-linear-gradient(45deg, #2A2A28 0, #2A2A28 16px, #2E2E2B 16px, #2E2E2B 32px); display: flex; align-items: center; justify-content: center;">
-        <div style="font-size: 16px; letter-spacing: 0.12em; text-transform: uppercase; color: #6E6E68;">webcam 384×216</div>
-      </div>
-    </sc-if>
-    <sc-if value="{{ liveCam }}" hint-placeholder-val="{{ false }}">
-      <div style="width: 384px; height: 216px; box-sizing: border-box; border: 1px solid #2A2A28;"></div>
-    </sc-if>
-    <sc-if value="{{ brandCam }}" hint-placeholder-val="{{ false }}">
-      <div style="width: 384px; height: 216px; box-sizing: border-box; border: 1px solid #2A2A28; background: rgba(14,14,14,0.92); display: flex; flex-direction: column; justify-content: space-between; padding: 14px 18px;">
-        <div style="display: flex; justify-content: space-between; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: #6E6E68;"><span>mez//live</span><span style="color: #6D7CFF;">■ rec</span></div>
-        <div style="position: relative; width: 160px; margin: 0 auto;">
-          <svg viewBox="0 0 390 80" width="160" role="img" aria-label="mez." style="display: block;">
-            <g fill="#FAFAF8"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
-          </svg>
-          <div style="position: absolute; left: 151px; top: 24px; width: 9px; height: 9px; background: #6D7CFF; animation: mezbreathe 2.4s ease-in-out infinite;"></div>
-          <div style="position: absolute; left: 151px; top: 24px; width: 9px; height: 9px; border: 1px solid #6D7CFF; animation: mezping 2.4s ease-out infinite;"></div>
-        </div>
-        <div>
-          <div style="font-size: 28px; color: {{ statColor }}; font-variant-numeric: tabular-nums; line-height: 1.2;">elo {{ elo }}<span style="color: #6D7CFF;">{{ deltaStr }}</span></div>
-          <div style="font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; font-variant-numeric: tabular-nums;"><span style="color: #17A30A;">{{ rankRegion }}</span><span style="color: {{ statColor }};">{{ rankNum }}</span><span style="color: #6E6E68;">{{ rankTotal }}</span></div>
-          <div style="font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; font-variant-numeric: tabular-nums;"><span style="color: #B9B9B4;">{{ wlPrefix }}</span><span style="color: #17A30A;">{{ wPart }}</span><span style="color: #6E6E68;">{{ wlSep }}</span><span style="color: #FE1F00;">{{ lPart }}</span></div>
-        </div>
-      </div>
-    </sc-if>
-    <sc-if value="{{ showNameplate }}" hint-placeholder-val="{{ false }}">
-      <div style="height: 34px; background: rgba(14,14,14,0.92); border: 1px solid #2A2A28; border-top: none; box-sizing: border-box; display: flex; align-items: center; padding: 0 12px;">
-        <svg viewBox="0 0 390 80" width="70" role="img" aria-label="mez.">
-          <g fill="#FAFAF8"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
-          <rect x="368" y="58" width="22" height="22" fill="#6D7CFF"></rect>
-        </svg>
-      </div>
-    </sc-if>
+  <!-- the one and only element: mez live card, top-left -->
+  <div style="position: absolute; top: 24px; left: 24px; width: 384px; height: 216px; box-sizing: border-box; border: 1px solid #2A2A28; background: rgba(14,14,14,0.92); display: flex; flex-direction: column; justify-content: space-between; padding: 14px 18px;">
+    <div style="display: flex; justify-content: space-between; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: #6E6E68;"><span>mez//live</span><span style="color: #6D7CFF;">■ rec</span></div>
+    <div style="position: relative; width: 160px; margin: 0 auto;">
+      <svg viewBox="0 0 390 80" width="160" role="img" aria-label="mez." style="display: block;">
+        <g fill="#FAFAF8"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
+      </svg>
+      <div style="position: absolute; left: 151px; top: 24px; width: 9px; height: 9px; background: #6D7CFF; animation: mezbreathe 2.4s ease-in-out infinite;"></div>
+      <div style="position: absolute; left: 151px; top: 24px; width: 9px; height: 9px; border: 1px solid #6D7CFF; animation: mezping 2.4s ease-out infinite;"></div>
+    </div>
+    <div>
+      <div style="font-size: 28px; color: {{ statColor }}; font-variant-numeric: tabular-nums; line-height: 1.2;">elo {{ elo }}<span style="color: #6D7CFF;">{{ deltaStr }}</span></div>
+      <div style="font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; font-variant-numeric: tabular-nums;"><span style="color: #17A30A;">{{ rankRegion }}</span><span style="color: {{ statColor }};">{{ rankNum }}</span><span style="color: #6E6E68;">{{ rankTotal }}</span></div>
+      <div style="font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 4px; font-variant-numeric: tabular-nums;"><span style="color: #B9B9B4;">{{ wlPrefix }}</span><span style="color: #17A30A;">{{ wPart }}</span><span style="color: #6E6E68;">{{ wlSep }}</span><span style="color: #FE1F00;">{{ lPart }}</span></div>
+    </div>
   </div>
-
-  <!-- 02-strip · terminal data box, bottom-left above health bar (camera mode only) -->
-  <sc-if value="{{ showStrip }}" hint-placeholder-val="{{ false }}">
-    <div style="position: absolute; bottom: 122px; left: 24px; width: 320px; background: rgba(14,14,14,0.92); border: 1px solid #2A2A28; box-sizing: border-box; padding: 14px 18px;">
-      <div style="display: flex; justify-content: space-between; font-size: 15px; letter-spacing: 0.12em; text-transform: uppercase; color: #6E6E68; margin-bottom: 8px;"><span>mez//live</span><span style="color: #6D7CFF;">■ rec</span></div>
-      <div style="font-size: 30px; color: {{ statColor }}; font-variant-numeric: tabular-nums; line-height: 1.3;">elo {{ elo }}<span style="color: #6D7CFF;">{{ deltaStr }}</span></div>
-      <div style="font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: #B9B9B4; margin-top: 6px;">{{ stripLabel }}</div>
-    </div>
-  </sc-if>
-
-  <!-- all-alerts · slides under score/timer zone -->
-  <sc-if value="{{ showAlert }}" hint-placeholder-val="{{ false }}">
-    <div style="position: absolute; top: 140px; left: 50%; height: 72px; background: rgba(14,14,14,0.92); border: 1px solid #2A2A28; box-sizing: border-box; display: flex; align-items: center; gap: 20px; padding: 0 28px; animation: mezalert 6s ease both;">
-      <div style="width: 16px; height: 16px; background: #6D7CFF; animation: mezblink 1s step-end 2;"></div>
-      <div style="font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4; white-space: nowrap;">{{ alertLabel }}</div>
-      <div style="font-size: 24px; font-weight: 700; color: #FAFAF8; white-space: nowrap;">{{ alertName }}</div>
-    </div>
-  </sc-if>
 
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{
   &quot;$preview&quot;: { &quot;width&quot;: 1920, &quot;height&quot;: 1080 },
-  &quot;demo&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;obs&quot; },
-  &quot;camMode&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;brand&quot;, &quot;camera&quot;], &quot;default&quot;: &quot;brand&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;obs&quot; },
-  &quot;showAlert&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;alert&quot; },
-  &quot;alertLabel&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;new follower&quot;, &quot;new sub&quot;, &quot;raid incoming&quot;, &quot;cheered&quot;], &quot;default&quot;: &quot;new follower&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;alert&quot; },
-  &quot;alertName&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;viewer_name&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;alert&quot; },
   &quot;faceitNickname&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;mezcs_&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;faceit auto&quot; },
   &quot;faceitApiKey&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;2a621cc6-c23e-4e00-bf76-2284c7d06489&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;faceit auto&quot; },
-  &quot;elo&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;2847&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;live numbers (fallback)&quot; },
-  &quot;tagline&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;rifler · 14&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;nameplate&quot; }
+  &quot;elo&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;2847&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;fallback&quot; }
 }">
 class Component extends DCLogic {
   state = {};
@@ -116,7 +61,7 @@ class Component extends DCLogic {
   }
 
   _startFaceit() {
-    const key = (this.props.faceitApiKey ?? '').trim();
+    const key = (this.props.faceitApiKey ?? '2a621cc6-c23e-4e00-bf76-2284c7d06489').trim();
     const nick = (this.props.faceitNickname ?? 'mezcs_').trim();
     if (!key || !nick) return;
     const poll = () => {
@@ -131,33 +76,17 @@ class Component extends DCLogic {
   renderVals() {
     const st = this.state || {};
     const live = st.live || {};
-    const liveUrl = new URLSearchParams(window.location.search).get('live') === '1';
-    const demo = this.props.demo ?? !liveUrl;
-    const camMode = this.props.camMode ?? 'brand';
     return {
-      demo: demo,
-      demoCam: demo && camMode === 'camera',
-      liveCam: !demo && camMode === 'camera',
-      brandCam: camMode === 'brand',
-      showStrip: camMode === 'camera',
-      showNameplate: camMode === 'camera',
-      rankRegion: live.rank != null ? (live.region ?? 'na') : '',
-      rankNum: live.rank != null ? ' #' + live.rank : '',
-      rankTotal: live.rank != null && live.total ? ' / ' + live.total.toLocaleString() : '',
-      canvasBg: demo
-        ? 'repeating-linear-gradient(45deg, #23231F 0, #23231F 24px, #26261F 24px, #26261F 48px)'
-        : 'transparent',
       elo: live.elo ?? this.props.elo ?? '2847',
       statColor: st.statColor ?? '#FAFAF8',
       deltaStr: st.delta != null ? ' ' + (st.delta >= 0 ? '+' + st.delta : String(st.delta)) : '',
+      rankRegion: live.rank != null ? (live.region ?? 'na') : '',
+      rankNum: live.rank != null ? ' #' + live.rank : '',
+      rankTotal: live.rank != null && live.total ? ' / ' + live.total.toLocaleString() : '',
       wlPrefix: live.todayW != null ? 'today ' : 'faceit elo',
       wPart: live.todayW != null ? 'W' + live.todayW : '',
       wlSep: live.todayW != null ? ' - ' : '',
       lPart: live.todayW != null ? 'L' + (live.todayL ?? 0) : '',
-      tagline: this.props.tagline ?? 'rifler · 14',
-      showAlert: this.props.showAlert ?? true,
-      alertLabel: this.props.alertLabel ?? 'new follower',
-      alertName: this.props.alertName ?? 'viewer_name',
     };
   }
 }
