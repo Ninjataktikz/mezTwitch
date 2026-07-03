@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; background: #0E0E0E; }
+    @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  </style>
+</helmet>
+<div data-screen-label="Control Deck" style="min-height: 100vh; background: #0E0E0E; font-family: ui-monospace, 'SF Mono', Consolas, monospace; color: #FAFAF8; display: flex; flex-direction: column; padding: 32px; box-sizing: border-box;">
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px;">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <svg viewBox="0 0 390 80" width="90" role="img" aria-label="mez.">
+        <g fill="#FAFAF8"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
+        <rect x="368" y="58" width="22" height="22" fill="#6D7CFF"></rect>
+      </svg>
+      <div style="font-size: 16px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">//control deck</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: {{ statusColor }};">
+      <div style="width: 10px; height: 10px; background: {{ statusColor }}; animation: mezblink 2s step-end infinite;"></div>
+      <div>{{ status }}</div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 24px; flex-wrap: wrap;">
+    <input value="{{ cfgHost }}" onChange="{{ setHost }}" placeholder="obs host (localhost)" style="background: #161614; border: 1px solid #2A2A28; color: #FAFAF8; font-family: ui-monospace, monospace; font-size: 14px; padding: 10px 14px; width: 200px; outline: none;">
+    <input value="{{ cfgPassword }}" onChange="{{ setPassword }}" type="password" placeholder="websocket password" style="background: #161614; border: 1px solid #2A2A28; color: #FAFAF8; font-family: ui-monospace, monospace; font-size: 14px; padding: 10px 14px; width: 220px; outline: none;">
+    <button onClick="{{ connect }}" style="background: #6D7CFF; border: none; color: #0E0E0E; font-family: ui-monospace, monospace; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; padding: 11px 22px; cursor: pointer;">connect</button>
+    <div style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #55554E;">obs → tools → websocket server settings → enable</div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; flex: 1;">
+    <sc-for list="{{ scenes }}" as="sc" hint-placeholder-count="6">
+      <button onClick="{{ sc.go }}" style="background: {{ sc.bg }}; border: 1px solid {{ sc.border }}; color: {{ sc.fg }}; font-family: ui-monospace, 'SF Mono', Consolas, monospace; cursor: pointer; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; min-height: 140px; padding: 20px 22px; text-align: left;" style-hover="border: 1px solid #6D7CFF;">
+        <div style="font-size: 15px; letter-spacing: 0.14em; color: {{ sc.numColor }};">{{ sc.num }}</div>
+        <div style="font-size: 22px; font-weight: 700; letter-spacing: 0.04em;">{{ sc.name }}</div>
+      </button>
+    </sc-for>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+    <button onClick="{{ toggleMic }}" style="background: {{ micBg }}; border: 1px solid {{ micBorder }}; color: {{ micFg }}; font-family: ui-monospace, monospace; font-size: 18px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 22px; cursor: pointer;" style-hover="border: 1px solid #6D7CFF;">{{ micLabel }}</button>
+    <button onClick="{{ toggleStream }}" style="background: {{ strBg }}; border: 1px solid {{ strBorder }}; color: {{ strFg }}; font-family: ui-monospace, monospace; font-size: 18px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 22px; cursor: pointer;" style-hover="border: 1px solid #6D7CFF;">{{ strLabel }}</button>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #2A2A28; margin-top: 24px; padding-top: 18px; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #6E6E68;">
+    <div>{{ footerHint }}</div>
+    <div style="font-variant-numeric: tabular-nums;">{{ clock }}</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1100, &quot;height&quot;: 760 },
+  &quot;micInput&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;Mic/Aux&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;obs&quot; }
+}">
+class Component extends DCLogic {
+  state = { cfgHost: 'localhost', cfgPassword: '', connected: false, scenes: null, active: '', streaming: false, micMuted: false, status: 'not connected — demo buttons', clock: '' };
+
+  componentDidMount() {
+    try {
+      const c = JSON.parse(localStorage.getItem('mez_deck_cfg'));
+      if (c) this.setState({ cfgHost: c.h || 'localhost', cfgPassword: c.p || '' }, () => this._connect());
+    } catch (e) {}
+    this._clockT = setInterval(() => {
+      const n = new Date();
+      this.setState({ clock: String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0') + ':' + String(n.getSeconds()).padStart(2, '0') });
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+    this._dead = true;
+    clearInterval(this._clockT);
+    clearTimeout(this._retryT);
+    try { this._ws.close(); } catch (e) {}
+  }
+
+  async _sha256b64(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return btoa(String.fromCharCode(...new Uint8Array(buf)));
+  }
+
+  _connect() {
+    try { this._ws.close(); } catch (e) {}
+    clearTimeout(this._retryT);
+    const host = (this.state.cfgHost || 'localhost').trim();
+    try { localStorage.setItem('mez_deck_cfg', JSON.stringify({ h: host, p: this.state.cfgPassword })); } catch (e) {}
+    this.setState({ status: 'connecting…' });
+    let ws;
+    try { ws = new WebSocket('ws://' + host + ':4455'); } catch (e) {
+      this.setState({ status: 'blocked — open this file locally' });
+      return;
+    }
+    this._ws = ws;
+    ws.onmessage = async (ev) => {
+      let msg = null;
+      try { msg = JSON.parse(ev.data); } catch (e) { return; }
+      if (msg.op === 0) {
+        const d = msg.d;
+        const identify = { op: 1, d: { rpcVersion: 1, eventSubscriptions: 33 } };
+        if (d.authentication) {
+          const secret = await this._sha256b64(this.state.cfgPassword + d.authentication.salt);
+          identify.d.authentication = await this._sha256b64(secret + d.authentication.challenge);
+        }
+        ws.send(JSON.stringify(identify));
+      } else if (msg.op === 2) {
+        this.setState({ connected: true, status: 'connected to obs' });
+        this._req('GetSceneList', {}, 'scenes');
+        this._req('GetStreamStatus', {}, 'stream');
+        this._req('GetInputMute', { inputName: this._mic() }, 'mute');
+      } else if (msg.op === 5) {
+        const t = msg.d.eventType, e = msg.d.eventData || {};
+        if (t === 'CurrentProgramSceneChanged') this.setState({ active: e.sceneName });
+        else if (t === 'StreamStateChanged') this.setState({ streaming: !!e.outputActive });
+        else if (t === 'InputMuteStateChanged' && e.inputName === this._mic()) this.setState({ micMuted: !!e.inputMuted });
+        else if (t === 'SceneListChanged') this._req('GetSceneList', {}, 'scenes');
+      } else if (msg.op === 7) {
+        const id = msg.d.requestId, r = msg.d.responseData || {};
+        if (id === 'scenes') {
+          const list = (r.scenes || []).slice().sort((a, b) => b.sceneIndex - a.sceneIndex).map((s) => s.sceneName);
+          this.setState({ scenes: list, active: r.currentProgramSceneName || this.state.active });
+        } else if (id === 'stream') this.setState({ streaming: !!r.outputActive });
+        else if (id === 'mute') this.setState({ micMuted: !!r.inputMuted });
+      }
+    };
+    ws.onclose = () => {
+      if (this._dead) return;
+      this.setState({ connected: false, status: 'not connected — retrying' });
+      this._retryT = setTimeout(() => this._connect(), 5000);
+    };
+    ws.onerror = () => {};
+  }
+
+  _mic() { return this.props.micInput ?? 'Mic/Aux'; }
+
+  _req(type, data, id) {
+    try { this._ws.send(JSON.stringify({ op: 6, d: { requestType: type, requestId: id || (type + Date.now()), requestData: data || {} } })); } catch (e) {}
+  }
+
+  renderVals() {
+    const st = this.state;
+    const names = st.scenes || ['01 starting', '02 game', '03 review', '04 brb', '05 ending', '06 tech'];
+    return {
+      cfgHost: st.cfgHost,
+      cfgPassword: st.cfgPassword,
+      setHost: (e) => this.setState({ cfgHost: e.target.value }),
+      setPassword: (e) => this.setState({ cfgPassword: e.target.value }),
+      connect: () => this._connect(),
+      status: st.status,
+      statusColor: st.connected ? '#17A30A' : '#FFC800',
+      scenes: names.map((name, i) => {
+        const on = name === st.active;
+        return {
+          num: String(i + 1).padStart(2, '0'),
+          name: name.replace(/^\d+\s*/, '') || name,
+          bg: on ? '#FAFAF8' : '#161614',
+          fg: on ? '#0E0E0E' : '#FAFAF8',
+          border: on ? '#FAFAF8' : '#2A2A28',
+          numColor: on ? '#2438E8' : '#6D7CFF',
+          go: () => {
+            if (st.connected) this._req('SetCurrentProgramScene', { sceneName: name });
+            this.setState({ active: name });
+          },
+        };
+      }),
+      toggleMic: () => {
+        if (st.connected) this._req('ToggleInputMute', { inputName: this._mic() });
+        else this.setState({ micMuted: !st.micMuted });
+      },
+      micLabel: st.micMuted ? 'mic muted — tap to unmute' : 'mic live — tap to mute',
+      micBg: st.micMuted ? '#FE1F00' : '#161614',
+      micFg: st.micMuted ? '#0E0E0E' : '#FAFAF8',
+      micBorder: st.micMuted ? '#FE1F00' : '#2A2A28',
+      toggleStream: () => {
+        if (st.connected) this._req(st.streaming ? 'StopStream' : 'StartStream', {});
+        else this.setState({ streaming: !st.streaming });
+      },
+      strLabel: st.streaming ? '● streaming — tap to end' : 'start stream',
+      strBg: st.streaming ? '#6D7CFF' : '#161614',
+      strFg: st.streaming ? '#0E0E0E' : '#FAFAF8',
+      strBorder: st.streaming ? '#6D7CFF' : '#2A2A28',
+      footerHint: st.connected ? 'white card = live scene · buttons act on obs instantly' : 'enter the obs websocket password and hit connect',
+      clock: st.clock,
+    };
+  }
+}
+</script>
+</body>
+</html>
