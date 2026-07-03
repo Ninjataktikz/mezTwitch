@@ -1,0 +1,43 @@
+name: faceit elo logger
+on:
+  schedule:
+    - cron: '17 * * * *' # hourly at :17
+  workflow_dispatch:
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: fetch elo + append to ledger
+        env:
+          FACEIT_KEY: ${{ secrets.FACEIT_KEY }}
+        run: |
+          node -e '
+          const fs = require("fs");
+          (async () => {
+            const h = { Authorization: "Bearer " + process.env.FACEIT_KEY };
+            const r = await fetch("https://open.faceit.com/data/v4/players?nickname=mezcs_", { headers: h });
+            if (!r.ok) { console.log("faceit lookup failed:", r.status); process.exit(0); }
+            const p = await r.json();
+            const g = (p.games && (p.games.cs2 || p.games.csgo)) || null;
+            if (!g || g.faceit_elo == null) process.exit(0);
+            const path = "data/stats.json";
+            const arr = fs.existsSync(path) ? JSON.parse(fs.readFileSync(path, "utf8")) : [];
+            const last = arr[arr.length - 1];
+            if (!last || last.elo !== g.faceit_elo) {
+              arr.push({ t: new Date().toISOString(), elo: g.faceit_elo });
+              fs.writeFileSync(path, JSON.stringify(arr, null, 1));
+              console.log("logged elo", g.faceit_elo);
+            } else {
+              console.log("elo unchanged", g.faceit_elo);
+            }
+          })();
+          '
+      - name: commit
+        run: |
+          git config user.name "ledger-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/stats.json
+          git diff --cached --quiet || (git commit -m "ledger: elo snapshot" && git push)
