@@ -17,8 +17,8 @@
 <div data-screen-label="Alerts" style="position: fixed; inset: 0; background: transparent; overflow: hidden; font-family: ui-monospace, 'SF Mono', Consolas, monospace;">
 
   <sc-if value="{{ setupVisible }}" hint-placeholder-val="{{ false }}">
-    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); background: rgba(14,14,14,0.94); border: 1px solid #2A2A28; box-sizing: border-box; padding: 40px 56px; text-align: center;">
-      <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4; line-height: 2.2;">
+    <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); background: rgba(8,11,26,0.94); border: 1px solid rgba(143,168,255,0.28); box-sizing: border-box; padding: 40px 56px; text-align: center;">
+      <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 18px; letter-spacing: 0.14em; text-transform: uppercase; color: #9FA8CC; line-height: 2.2;">
         connect twitch — one time<br>
         go to <span style="color: #FAFAF8;">twitch.tv/activate</span><br>
         enter code <span style="color: #6D7CFF; font-size: 26px;">{{ setupCode }}</span>
@@ -27,15 +27,15 @@
   </sc-if>
 
   <sc-if value="{{ alertVisible }}" hint-placeholder-val="{{ false }}">
-    <div style="position: absolute; top: 140px; left: 50%; height: 72px; background: rgba(14,14,14,0.92); border: 1px solid #2A2A28; box-sizing: border-box; display: flex; align-items: center; gap: 20px; padding: 0 28px; animation: mezalert 6s ease both;">
+    <div style="position: absolute; top: 140px; left: 50%; height: 72px; background: rgba(8,11,26,0.94); border: 1px solid rgba(143,168,255,0.28); box-sizing: border-box; display: flex; align-items: center; gap: 20px; padding: 0 28px; animation: mezalert 6s ease both;">
       <div style="width: 16px; height: 16px; background: #6D7CFF; animation: mezblink 1s step-end 2;"></div>
-      <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4; white-space: nowrap;">{{ alertLabel }}</div>
+      <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #9FA8CC; white-space: nowrap;">{{ alertLabel }}</div>
       <div style="font-size: 26px; font-weight: 700; color: #FAFAF8; white-space: nowrap;">{{ alertName }}</div>
     </div>
   </sc-if>
 
   <sc-if value="{{ statusVisible }}" hint-placeholder-val="{{ false }}">
-    <div style="position: absolute; left: 16px; bottom: 16px; font-family: ui-monospace, monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #6E6E68;">{{ status }}</div>
+    <div style="position: absolute; left: 16px; bottom: 16px; font-family: ui-monospace, monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #6F79A0;">{{ status }}</div>
   </sc-if>
 
 </div>
@@ -44,7 +44,7 @@
   &quot;$preview&quot;: { &quot;width&quot;: 1920, &quot;height&quot;: 1080 },
   &quot;demo&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;obs&quot; },
   &quot;testAlert&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: false, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;obs&quot; },
-  &quot;volume&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.25, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;sound&quot; },
+  &quot;volume&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;sound (0 = silent)&quot; },
   &quot;clientId&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;1v5z90u55n6uwdlpf5jcs3oluae5uy&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;twitch auth&quot; },
   &quot;accessToken&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;twitch auth&quot; }
 }">
@@ -212,11 +212,14 @@ class Component extends DCLogic {
     if (!q.length) return;
     this._showing = true;
     this.setState({ current: q[0], queue: q.slice(1) });
-    try {
-      const a = new Audio('./exports/alert-tick.wav');
-      a.volume = this.props.volume ?? 0.25;
-      a.play().catch(() => {});
-    } catch (e) {}
+    const vol = this.props.volume ?? 0;
+    if (vol > 0) {
+      try {
+        const a = new Audio('./exports/alert-tick.wav');
+        a.volume = vol;
+        a.play().catch(() => {});
+      } catch (e) {}
+    }
     this._at = setTimeout(() => {
       this.setState({ current: null });
       this._showing = false;

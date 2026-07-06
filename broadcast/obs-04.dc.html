@@ -10,8 +10,9 @@
 <helmet>
   <style>
     html, body { height: 100%; }
-    body { margin: 0; background: #0E0E0E; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    body { margin: 0; background: #05060F; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    @keyframes mezwarp { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 0.85; } 100% { transform: translateY(1520px); opacity: 0; } }
   </style>
   <script>
     (function () {
@@ -21,23 +22,31 @@
     })();
   </script>
 </helmet>
-<div data-screen-label="OBS BRB" style="width: 1920px; height: 1080px; flex-shrink: 0; transform: scale(var(--mezscale, 1)); background: #0E0E0E; position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; color: #FAFAF8; overflow: hidden;">
-  <div style="position: absolute; top: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">mez//standby</div>
-  <div style="position: absolute; top: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">{{ dateStr }}</div>
-  <div style="position: absolute; bottom: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">faceit/mezcs_</div>
-  <div style="position: absolute; bottom: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6E6E68;">1920×1080/60</div>
-  <div style="position: absolute; top: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: #2A2A28;"></div>
-  <div style="position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: #2A2A28;"></div>
-  <div style="position: absolute; left: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: #2A2A28;"></div>
-  <div style="position: absolute; right: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: #2A2A28;"></div>
+<div data-screen-label="OBS BRB" style="width: 1920px; height: 1080px; flex-shrink: 0; transform: scale(var(--mezscale, 1)); background: radial-gradient(circle at 50% 50%, #10142A 0%, #05060F 78%); position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; color: #FAFAF8; overflow: hidden;">
+  <div style="position: absolute; left: 6%; top: -220px; width: 2px; height: 130px; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.8)); animation: mezwarp 2.6s linear infinite;"></div>
+  <div style="position: absolute; left: 16%; top: -220px; width: 2px; height: 160px; background: linear-gradient(180deg, transparent, #8FA8FF); animation: mezwarp 2.2s 0.7s linear infinite;"></div>
+  <div style="position: absolute; left: 28%; top: -220px; width: 1px; height: 110px; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.7)); animation: mezwarp 3s 0.3s linear infinite;"></div>
+  <div style="position: absolute; left: 43%; top: -220px; width: 2px; height: 150px; background: linear-gradient(180deg, transparent, #B9C6FF); animation: mezwarp 2.4s 1.2s linear infinite;"></div>
+  <div style="position: absolute; left: 58%; top: -220px; width: 1px; height: 120px; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.7)); animation: mezwarp 2.8s 0.5s linear infinite;"></div>
+  <div style="position: absolute; left: 72%; top: -220px; width: 2px; height: 170px; background: linear-gradient(180deg, transparent, #8FA8FF); animation: mezwarp 2.3s 1.6s linear infinite;"></div>
+  <div style="position: absolute; left: 84%; top: -220px; width: 2px; height: 140px; background: linear-gradient(180deg, transparent, #B9C6FF); animation: mezwarp 2.7s 0.9s linear infinite;"></div>
+  <div style="position: absolute; left: 94%; top: -220px; width: 1px; height: 120px; background: linear-gradient(180deg, transparent, rgba(255,255,255,0.7)); animation: mezwarp 3.2s 1.4s linear infinite;"></div>
+  <div style="position: absolute; top: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6F79A0;">mez//standby</div>
+  <div style="position: absolute; top: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6F79A0;">{{ dateStr }}</div>
+  <div style="position: absolute; bottom: 48px; left: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6F79A0;">faceit/mezcs_</div>
+  <div style="position: absolute; bottom: 48px; right: 48px; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #6F79A0;">1920×1080/60</div>
+  <div style="position: absolute; top: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: rgba(143,168,255,0.22);"></div>
+  <div style="position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); width: 1px; height: 24px; background: rgba(143,168,255,0.22);"></div>
+  <div style="position: absolute; left: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: rgba(143,168,255,0.22);"></div>
+  <div style="position: absolute; right: 44px; top: 50%; transform: translateY(-50%); width: 24px; height: 1px; background: rgba(143,168,255,0.22);"></div>
   <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); text-align: center; white-space: nowrap;">
-    <svg viewBox="0 0 390 80" width="220" role="img" aria-label="mez." style="display: block; margin: 0 auto;">
+    <svg viewBox="0 0 390 80" width="220" role="img" aria-label="mez." style="display: block; margin: 0 auto; filter: drop-shadow(0 0 20px rgba(109,124,255,0.5));">
       <g fill="#FAFAF8"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
       <rect x="368" y="58" width="22" height="22" fill="#6D7CFF"></rect>
     </svg>
-    <div style="font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; color: #B9B9B4; margin-top: 72px; line-height: 2;">standby<br>{{ message }}<br><span style="color: {{ statColor }};">elo {{ elo }}</span><span style="color: #FAFAF8;"> · </span><span style="color: {{ kdColor }};">k/d {{ kd }}</span><span style="color: #FAFAF8;"> · </span><span style="color: {{ hsColor }};">hs {{ hs }}%</span> <span style="display: inline-block; width: 14px; height: 14px; background: #6D7CFF; animation: mezblink 2s step-end infinite;"></span></div>
+    <div style="font-size: 26px; letter-spacing: 0.14em; text-transform: uppercase; color: #9FA8CC; margin-top: 72px; line-height: 2;">standby<br>{{ message }}<br><span style="color: {{ statColor }};">elo {{ elo }}</span><span style="color: #FAFAF8;"> · </span><span style="color: {{ kdColor }};">k/d {{ kd }}</span><span style="color: #FAFAF8;"> · </span><span style="color: {{ hsColor }};">hs {{ hs }}%</span> <span style="display: inline-block; width: 14px; height: 14px; background: #6D7CFF; animation: mezblink 2s step-end infinite;"></span></div>
     <sc-if value="{{ hasRank }}" hint-placeholder-val="{{ false }}">
-      <div style="font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; margin-top: 14px;"><span style="color: #17A30A;">{{ rankRegion }}</span><span style="color: {{ statColor }};">{{ rankNum }}</span><span style="color: #B9B9B4;">{{ rankTotal }}</span></div>
+      <div style="font-size: 22px; letter-spacing: 0.14em; text-transform: uppercase; margin-top: 14px;"><span style="color: #17A30A;">{{ rankRegion }}</span><span style="color: {{ statColor }};">{{ rankNum }}</span><span style="color: #8A93B8;">{{ rankTotal }}</span></div>
     </sc-if>
   </div>
 </div>
@@ -89,9 +98,9 @@ class Component extends DCLogic {
       rankRegion: live.rank != null ? (live.region ?? 'na') : '',
       rankNum: live.rank != null ? ' #' + live.rank : '',
       rankTotal: live.rank != null && live.total ? ' / ' + live.total.toLocaleString() : '',
-      statColor: st.statColor ?? '#FAFAF8',
-      kdColor: st.kdColor ?? '#B9B9B4',
-      hsColor: st.hsColor ?? '#B9B9B4',
+      statColor: st.statColor ?? '#B9C6FF',
+      kdColor: st.kdColor ?? '#9FA8CC',
+      hsColor: st.hsColor ?? '#9FA8CC',
     };
   }
 }
