@@ -12,6 +12,9 @@
     body { margin: 0; background: transparent; overflow: hidden; }
     @keyframes mezblink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     @keyframes mezalert { 0% { transform: translate(-50%, -24px); opacity: 0; } 6% { transform: translate(-50%, 0); opacity: 1; } 94% { transform: translate(-50%, 0); opacity: 1; } 100% { transform: translate(-50%, -24px); opacity: 0; } }
+    @keyframes mezpb { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.14); } }
+    @keyframes mezfill { 0% { width: 6%; } 55%, 100% { width: 96%; } }
+    @keyframes mezfloat { 0% { transform: translateY(26px); opacity: 0; } 18% { opacity: 1; } 100% { transform: translateY(-120px); opacity: 0; } }
   </style>
 </helmet>
 <div data-screen-label="Alerts" style="position: fixed; inset: 0; background: transparent; overflow: hidden; font-family: ui-monospace, 'SF Mono', Consolas, monospace;">
@@ -27,10 +30,18 @@
   </sc-if>
 
   <sc-if value="{{ alertVisible }}" hint-placeholder-val="{{ false }}">
-    <div style="position: absolute; top: 140px; left: 50%; height: 72px; background: rgba(8,11,26,0.94); border: 1px solid rgba(143,168,255,0.28); box-sizing: border-box; display: flex; align-items: center; gap: 20px; padding: 0 28px; animation: mezalert 6s ease both;">
-      <div style="width: 16px; height: 16px; background: #6D7CFF; animation: mezblink 1s step-end 2;"></div>
-      <div style="font-family: ui-monospace, 'SF Mono', Consolas, monospace; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; color: #9FA8CC; white-space: nowrap;">{{ alertLabel }}</div>
-      <div style="font-size: 26px; font-weight: 700; color: #FAFAF8; white-space: nowrap;">{{ alertName }}</div>
+    <div style="position: absolute; top: 140px; left: 50%; animation: mezalert 6s ease both;">
+      <div style="background: rgba(11,16,32,0.95); border: 2px solid #3E5A7A; border-radius: 10px; padding: 20px 34px; width: 440px; box-sizing: border-box; box-shadow: 0 0 34px rgba(109,124,255,0.25);">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 18px; margin-bottom: 10px;">
+          <div style="font-family: 'Trebuchet MS', Helvetica, sans-serif; font-size: 26px; font-weight: 700; color: #FFFFFF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ alertName }}</div>
+          <div style="font-family: 'Trebuchet MS', Helvetica, sans-serif; font-size: 17px; font-weight: 700; color: #FFD700; white-space: nowrap; animation: mezpb 1.3s ease-in-out infinite;">LVL {{ alertLvl }} ★</div>
+        </div>
+        <div style="height: 16px; background: #0A0F18; border-radius: 8px; overflow: hidden; border: 1px solid #3E5A7A;">
+          <div style="height: 100%; background: linear-gradient(90deg, #46E36B, #B4FF5A); border-radius: 8px; animation: mezfill 6s ease-out both;"></div>
+        </div>
+        <div style="font-family: 'Trebuchet MS', Helvetica, sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.04em; color: #8FB3D9; margin-top: 8px;">{{ alertLabel }} — LEVEL UP!</div>
+      </div>
+      <div style="position: absolute; right: -24px; top: -12px; font-family: 'Trebuchet MS', Helvetica, sans-serif; font-size: 20px; font-weight: 700; color: #B4FF5A; text-shadow: 0 0 10px rgba(180,255,90,0.5); animation: mezfloat 2.4s ease-out infinite;">+{{ alertLvl }} XP</div>
     </div>
   </sc-if>
 
@@ -57,7 +68,7 @@ class Component extends DCLogic {
 
   componentDidUpdate(prevProps) {
     if (prevProps && prevProps.testAlert !== this.props.testAlert) {
-      this._enqueue({ label: 'new follower', name: 'test_viewer' });
+      this._enqueue({ label: 'resub · 14 months', name: 'test_viewer', lvl: 14 });
     }
   }
 
@@ -198,7 +209,12 @@ class Component extends DCLogic {
     else if (type === 'channel.cheer') { label = 'cheered ' + (e.bits || 0) + ' bits'; if (e.is_anonymous) name = 'anonymous'; }
     else if (type === 'channel.raid') { label = 'raid incoming · ' + (e.viewers || 0) + ' viewers'; name = e.from_broadcaster_user_name || ''; }
     if (!label) return;
-    this._enqueue({ label: label, name: name });
+    let lvl = 1;
+    if (type === 'channel.subscription.message') lvl = e.cumulative_months || 1;
+    else if (type === 'channel.subscription.gift') lvl = e.total || 1;
+    else if (type === 'channel.cheer') lvl = Math.max(1, Math.round((e.bits || 0) / 100));
+    else if (type === 'channel.raid') lvl = e.viewers || 1;
+    this._enqueue({ label: label, name: name, lvl: lvl });
   }
 
   _enqueue(a) {
@@ -233,6 +249,7 @@ class Component extends DCLogic {
       alertVisible: !!cur,
       alertLabel: cur ? cur.label : '',
       alertName: cur ? cur.name : '',
+      alertLvl: cur ? String(cur.lvl || 1) : '',
       setupVisible: !!this.state.setup,
       setupCode: this.state.setup ? this.state.setup.code : '',
       statusVisible: (this.props.demo ?? true) && !cur && !this.state.setup,
