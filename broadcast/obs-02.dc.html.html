@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    html, body { height: 100%; }
+    body { margin: 0; background: transparent; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    @keyframes mezping { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(3.2); opacity: 0; } }
+    @keyframes mezbreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+  </style>
+  <script>
+    (function () {
+      function fit() { document.documentElement.style.setProperty('--mezscale', Math.min(window.innerWidth / 1920, window.innerHeight / 1080)); }
+      window.addEventListener('resize', fit);
+      fit();
+    })();
+  </script>
+</helmet>
+<div data-screen-label="OBS Game Overlay" style="width: 1920px; height: 1080px; flex-shrink: 0; transform: scale(var(--mezscale, 1)); position: relative; font-family: ui-monospace, 'SF Mono', Consolas, monospace; overflow: hidden; background: transparent;">
+
+  <!-- minimap mask box, top-left — wordmark only -->
+  <div style="position: absolute; top: 24px; left: 24px; width: 384px; height: 216px; transform: scale(1.1); transform-origin: top left; box-sizing: border-box; border: 1px solid rgba(143,168,255,0.28); background: #080B1A; display: flex; align-items: center; justify-content: center;">
+    <div style="position: relative; width: 280px;">
+      <svg viewBox="0 0 390 80" width="280" role="img" aria-label="mez." style="display: block;">
+        <g fill="#FAFAF8"><rect width="112" height="18"></rect><rect width="20" height="80"></rect><rect x="46" width="20" height="80"></rect><rect x="92" width="20" height="80"></rect><g transform="translate(128,0)"><rect width="76" height="18"></rect><rect width="20" height="80"></rect><rect y="31" width="76" height="18"></rect><rect x="56" y="18" width="20" height="13"></rect><rect y="62" width="76" height="18"></rect></g><g transform="translate(220,0)"><rect width="68" height="18"></rect><polygon points="44,18 68,18 24,62 0,62"></polygon><rect y="62" width="128" height="18"></rect></g></g>
+      </svg>
+      <div style="position: absolute; left: 264px; top: 42px; width: 16px; height: 16px; background: #6D7CFF; animation: mezbreathe 2.4s ease-in-out infinite;"></div>
+      <div style="position: absolute; left: 264px; top: 42px; width: 16px; height: 16px; border: 1px solid #6D7CFF; animation: mezping 2.4s ease-out infinite;"></div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{ &quot;$preview&quot;: { &quot;width&quot;: 1920, &quot;height&quot;: 1080 } }"></script>
+</body>
+</html>
